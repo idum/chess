@@ -4,16 +4,32 @@
 # status, that check if the piece is in game or not, and can be "init", initial position 
 #   on the board, "ingame" if the piece is on the board during a game, "capt" if the piece is captured and out of the board
 # position, that define position on the board, and can be "out", if captured
-#
+# avatar: the unicode chess char
 
 
 class Piece
-    attr_reader :color, :position, :status
+    #unicode values for pieces"
 
-    def initialize(color="W",position="out",status="init")
+    WHITEKING = "\u2654"
+    WHITEQUEEN = "\u2655"
+    WHITEROOK = "\u2656"
+    WHITEBISHOP = "\u2657"
+    WHITEKNIGHT = "\u2658"
+    WHITEPAWN = "\u2659"
+    BLACKKING = "\u265A"
+    BLACKQUEEN = "\u265B"
+    BLACKROOK = "\u265C"
+    BLACKBISHOP = "\u265D"
+    BLACKKNIGHT = "\u265E"
+    BLACKPAWN = "\u265F"
+
+    attr_reader :color, :position, :status, :avatar
+ 
+    def initialize
         @color="W"
         @position="out"
         @status="init"
+        @avatar=""
     end
 
     def set_color(c)
@@ -34,6 +50,16 @@ class Piece
         return true
     end
 
+    def set_avatar(c)
+        return false if !c.match?(/[\u2655-\u265F]/)
+        @avatar=c
+        return true
+    end
+
+    def to_s 
+        @avatar
+    end
+
     private
 
     def test_position(c)
@@ -44,3 +70,4 @@ class Piece
     end
 
 end
+
