@@ -47,8 +47,8 @@ describe Piece do
             expect(piece.status).to eql('ingame')
             expect(piece.set_status 'capt').to be true
             expect(piece.status).to eql('capt')
-            expect(piece.set_status 'init').to be true
-            expect(piece.status).to eql('init')
+            expect(piece.set_status 'start').to be true
+            expect(piece.status).to eql('start')
         end
     end
     describe "#set_position" do
@@ -68,6 +68,16 @@ describe Piece do
         it 'return true if "out" input' do
             expect(piece.set_position 'out').to be true
             expect(piece.position).to eql('out')
+        end
+    end
+    # we will test here legal movement. For generic piece, legal movement
+    # test only if the move is on the board
+    describe "#legal_move" do
+        it 'return true if move is legal' do
+            expect(piece.legal_move('e4')).to be true
+        end
+        it 'return false if move is not legal' do
+            expect(piece.legal_move('4e')).to be false
         end
     end
 
