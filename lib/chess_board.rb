@@ -34,14 +34,9 @@ class ChessBoard
             end
             st+="\n"
         end
-        st+= Rainbow("   a  b  c  d  e  f  g  h").color("FFFFFF").bg("000000")
+        st+= Rainbow("    a  b  c  d  e  f  g  h").color("FFFFFF")
         puts st
     end
-    
-end
-
-
-ChessBoard.new.putconsole()
-                   
+end                   
 
 
