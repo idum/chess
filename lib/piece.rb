@@ -1,4 +1,4 @@
-# Class Piece is the ancestor class for all the pieces of chess.
+# Class Piece is the interface class for all the pieces of chess.
 # It define basic elements: 
 # color, piece game side, that can be "B" = black or "W" = white
 # status, that check if the piece is in game or not, and can be 
@@ -16,12 +16,15 @@ class Piece
     WHITEBISHOP = "\u2657"
     WHITEKNIGHT = "\u2658"
     WHITEPAWN = "\u2659"
+    
     BLACKKING = "\u265A"
     BLACKQUEEN = "\u265B"
     BLACKROOK = "\u265C"
     BLACKBISHOP = "\u265D"
     BLACKKNIGHT = "\u265E"
     BLACKPAWN = "\u265F"
+    
+    
 
     attr_reader :color, :position, :status, :avatar
  
@@ -50,8 +53,9 @@ class Piece
         return true
     end
 
+    #forse non va bene
     def set_avatar(c)
-        return false if !c.match?(/[\u2655-\u265F]/)
+        return false if !c.match?(/[\u2654-\u265F]/)
         @avatar=c
         return true
     end
