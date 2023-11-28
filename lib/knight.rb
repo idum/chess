@@ -9,7 +9,7 @@ class Knight < Piece
     # and a position and setting
     # When the game will be created, istance will define starting position
 
-    def initialize (color, position="out", status="init")
+    def initialize (color, position="out", status="start")
         color=="B" ? @avatar=BLACKKNIGHT : @avatar=WHITEKNIGHT
         set_color(color)
         @position = position

@@ -5,34 +5,49 @@
 # We will provide a log command for recall all the moves.
 # In eventual following develop cycles we will try to implement html page with graphical improvements.
 
-require_relative "king"
-require_relative "bishop"
-require_relative "rook"
-require_relative "knight"
-require_relative "queen"
-require_relative "pawn"
-require_relative "space"
+
 require_relative "chess_board"
 
 class GameManager
+    attr_reader :media, :variant, :game
    
-    def initialize(variant="classic")
-        @variant=variant
-        @game=Hash.new{}
-        @move_stack=Array.new
+    def initialize(variant="classic",media="console")
+        @variant = variant
+        @media = media
+        @game=ChessBoard.new(variant,media)
     end
 
     def new_game
-        @board=ChessBoard.new(@variant)
-        @game=@board.setup_board
-        # prova @move_stack=["e4","e5","Cc3","Cc6","Ab7","Troi","asf","wss","ffds","sd","O-O","O-O-O","kds"]
-        @board.putconsole(@game,@move_stack)
-        #gestione mosse
+        position=@game.start_position
+        move_stack=[]
+        letsplay(position,move_stack,"game")
     end
 
-    
+    def letsplay(position,move_stack,status)
+        loop do
+            @game.show_game(position,move_stack,status) 
+            return move_stack if status!="game"
+            move=""
+            loop do
+                err=""
+                move=@game.take_move(move_stack.size,err)
+                err=eval_move(move,position)
+                break if err==""
+            end
+            status=make_move(move,move_stack)
+        end
+    end
+
+    def eval_move(move, position)
+        return ""
+    end
+
+    def make_move(move, move_stack)
+        return "end_mate"
+    end
+
 
 end        
 
 a=GameManager.new
-puts a.new_game
+a.new_game
