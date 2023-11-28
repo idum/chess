@@ -31,7 +31,7 @@ class Pawn < Piece
 
     # note: we will develop this part when we will complete the class Game
 
-    def legal_move(move,board)
+    def legal_move(move,piece_position)
         true
     end
 end

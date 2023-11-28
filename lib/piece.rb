@@ -3,7 +3,7 @@
 # color, piece game side, that can be "B" = black or "W" = white
 # status, that check if the piece is in game or not, and can be 
 # "start", initial and "not yet moved" status, "ingame" during a game (moved), "capt" if the piece is captured and out of the board
-# position, that define position on the board, and can be "out", if captured or in setup phase
+# position, that define position on the board; 
 # avatar: the unicode chess char
 
 
@@ -31,7 +31,7 @@ class Piece
     def initialize
         @color="W"
         @position="out"
-        @status="init"
+        @status="start"
         @avatar=""
     end
 
@@ -75,11 +75,10 @@ class Piece
     def piece_movement(move)
         true
     end
-
-    private
-
+    
     def test_position(c)
-        return true if c=="out"
+        # test if out is a special test that can be useful for future graphical needings
+        # return true if c=="out"
         return false if c.size!=2
         col,row = c.chars
         return (col.match?(/[a-h]/) && row.match?(/[1-8]/)) 

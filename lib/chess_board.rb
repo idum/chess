@@ -90,7 +90,7 @@ class ChessBoard
         end
         n.size.odd? ? mv+="Nero Move!:" : mv+="White Move!:"
         puts mv+" "
-        return gets
+        return gets.chomp
     end
 
     def setup_board(variant="classic")
