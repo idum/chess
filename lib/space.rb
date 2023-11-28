@@ -1,5 +1,6 @@
 # space is a particular type of Piece that rapresent the empty space
 # it cannot be moved and his avatar is the empty or full space (eventually colored)
+require_relative "piece"
 class Space < Piece
     WHITESPACECOLOR="Cornsilk"
     BLACKSPACECOLOR="Cyan"  

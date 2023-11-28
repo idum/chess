@@ -1,6 +1,8 @@
 # This is the Pawn class. 
 # It is a Piece, so it use that minimal interface.
 # Here we will define his behaviour
+
+require_relative "piece"
 class Pawn < Piece
     # King setting start with assign the right avatar (based by color)
     # and a position and setting

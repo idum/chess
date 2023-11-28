@@ -5,40 +5,34 @@
 # We will provide a log command for recall all the moves.
 # In eventual following develop cycles we will try to implement html page with graphical improvements.
 
+require_relative "king"
+require_relative "bishop"
+require_relative "rook"
+require_relative "knight"
+require_relative "queen"
+require_relative "pawn"
+require_relative "space"
+require_relative "chess_board"
+
 class GameManager
-    def initialize(input="stdin", output="stdout",variant="classic")
-        @input=input
-        @output=output
-        @board=Hash.new
-        @status="idle"
-        setup_board(variant)
+   
+    def initialize(variant="classic")
+        @variant=variant
+        @game=Hash.new{}
+        @move_stack=Array.new
     end
 
-    def setup_board(*variant)
-        #this method is the crossway for different variant setup. Here we have only one variant: classic
-        return "Sorry, this variant is not (yet?) implemented" if variant!="classic"
-        setup_classic
-        @status="game"
+    def new_game
+        @board=ChessBoard.new(@variant)
+        @game=@board.setup_board
+        # prova @move_stack=["e4","e5","Cc3","Cc6","Ab7","Troi","asf","wss","ffds","sd","O-O","O-O-O","kds"]
+        @board.putconsole(@game,@move_stack)
+        #gestione mosse
     end
 
+    
 
+end        
 
-
-
-    private
-    def setup_classic
-        #build base section
-        'a'.upto 'h' do |col|
-            '3'.upto '6' do |row|
-
-
-
-
-
-
-
-
-
-
-
-end
+a=GameManager.new
+puts a.new_game

@@ -1,6 +1,9 @@
 # This is the King class. 
 # It is a Piece, so it use that minimal interface.
 # Here we will define his behaviour
+
+require_relative "piece"
+
 class Knight < Piece
     # King setting start with assign the right avatar (based by color)
     # and a position and setting
