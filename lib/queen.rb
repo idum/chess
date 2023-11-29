@@ -23,8 +23,11 @@ class Queen < Piece
 
     # note: we will develop this part when we will complete the class Game
 
-    def legal_move(move,board)
-        true
+    def legal_move(start_location, move, position,distinguish_mark,captured,promotion,turn)
+        super
+        #legal_move_list=[[stcol,strow+1]] if (strow<7) || !promotion.nil?
+
+
     end
 end
 

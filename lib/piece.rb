@@ -68,14 +68,20 @@ class Piece
     # first is the test for legal movement in a generic way
     # a move is correct if a) respect test_position b) respect piece_movement
 
-    def legal_move(move,*board)
-        return test_position(move) && piece_movement(move)
+    def legal_move(start_location, move, position,distinguish_mark,captured,promotion,turn)
+        # The move is not legal if target move is the same of start position or if the target location is occupied to a piece with same color
+        if (distinguish_mark.nil? ||!distinguish_mark.match?(/o-o/)) 
+            return false if move==start_location
+            return false if position[move] && position[move].color==position[start_location].color
+            return false if captured && position[move].nil?
+        end
+
+        stcol,strow=start_location #decomposed col and row of piece start location
+        trcol,trrow=move #decomposed col and row of piece target location
+        #now every piece can add her movement rule
+        return true
     end
 
-    def piece_movement(move)
-        true
-    end
-    
     def test_position(c)
         # test if out is a special test that can be useful for future graphical needings
         # return true if c=="out"
@@ -83,6 +89,22 @@ class Piece
         col,row = c.chars
         return (col.match?(/[a-h]/) && row.match?(/[1-8]/)) 
     end
+
+    private
+    #some methods for modify rows and colums
+    def mv_col(c,step)
+        r=c.ord + step
+        return r.chr if (r<=104 && r>=97)
+        return false
+    end
+
+    def mv_row(c,step=1)
+        r=c.ord + step
+        return r.chr if (r<=56 && r>=49)
+        return false
+    end
+
+      
 
 end
 

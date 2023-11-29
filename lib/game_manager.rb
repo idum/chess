@@ -8,6 +8,8 @@
 
 require_relative "chess_board"
 
+CHESS_DICTIONARY = {"K" => King, "Q" => Queen, "R" => Rook, "B" => Bishop, "N" => Knight, "P" => Pawn}
+
 class GameManager
     attr_reader :media, :variant, :game
    
@@ -80,13 +82,19 @@ class GameManager
         else 
             return "bad"
         end       
-        target=col+row    
         # part 2: verify if the move is legal
-        # move is legal if it is into the board, and the selected piece can move in the target
+        # move is legal if it is into the board, 
+        return "bad" if !(col.match?(/[a-h]/) && row.match?(/[1-8]/))
+
+        # and the selected piece can move in the target
         # test will be made by specific movement rules of single pieces
         # problem is to individuate the piece in position that can be the move
-        return "bad" if !(col.match?(/[a-h]/) && row.match?(/[1-8]/))
-        p "selected_piece = #{selected_piece}, move = #{target}, distinguish_mark = #{distinguish_mark}, promotion=#{promotion}" 
+
+        move_piece=position.find {|location,piece| (piece.class == CHESS_DICTIONARY[selected_piece]) && 
+                                    piece.legal_move(location,[col,row],position,distinguish_mark,captured,promotion)}
+        return "err" if move_piece.nil?
+        puts move_piece
+        #fai la mossa
         return "game"        
     end
 
