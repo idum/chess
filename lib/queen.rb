@@ -25,6 +25,8 @@ class Queen < Piece
 
     def legal_move(start_location, move, position,distinguish_mark,captured,promotion,turn)
         super
+        stcol,strow=start_location #decomposed col and row of piece start location
+        trcol,trrow=move #decomposed col and row of piece target location
         #legal_move_list=[[stcol,strow+1]] if (strow<7) || !promotion.nil?
 
 

@@ -35,12 +35,14 @@ class Pawn < Piece
 
     def legal_move(start_location, move, position,distinguish_mark,captured,promotion,turn)
         super
+        stcol,strow=start_location #decomposed col and row of piece start location
+        trcol,trrow=move #decomposed col and row of piece target location
         return false if position[move] && !captured #3)
         move_list=[]
         case position[start_location].color
         when "W"
-            move_list+=[[stcol,mv_row(strow,1)]] if (strow<7) || !promotion.nil? # 1)
-            move_list+=[[stcol,mv_row(strow,2)]] if strow==2 #2)
+            move_list+=[[stcol,mv_row(strow,1)]] if (strow.to_i<7) || !promotion.nil? # 1)
+            move_list+=[[stcol,mv_row(strow,2)]] if strow.to_i==2 #2)
             move_list+=[[mv_col(stcol,1),mv_row(strow,1)]] if (captured && 
                                                             position[mv_col(stcol,1),mv_row(strow,1)] &&
                                                             position[mv_col(stcol,1),mv_row(strow,1)].color=="B") #4)
@@ -59,8 +61,8 @@ class Pawn < Piece
                                                                 position[mv_col(stcol,-1),strow].class==Pawn &&
                                                                 position[mv_col(stcol,-1),strow].status.to_i==turn-1) #5)
         when "B"
-            move_list+=[[stcol,mv_row(strow,-1)]] if (strow>1) || !promotion.nil? # 1)
-            move_list+=[[stcol,mv_row(strow,-2)]] if strow==7 #2)
+            move_list+=[[stcol,mv_row(strow,-1)]] if (strow.to_i>1) || !promotion.nil? # 1)
+            move_list+=[[stcol,mv_row(strow,-2)]] if strow.to_i==7 #2)
             move_list+=[[mv_col(stcol,1),mv_row(strow,-1)]] if (captured && 
                                                             position[mv_col(stcol,1),mv_row(strow,-1)] &&
                                                             position[mv_col(stcol,1),mv_row(strow,-1)].color=="B") #4)

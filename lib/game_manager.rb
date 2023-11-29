@@ -26,18 +26,19 @@ class GameManager
     end
 
     def letsplay(position,move_stack,status)
+        turn=move_stack.size/2
         loop do
             @game.show_game(position,move_stack,status) 
             return move_stack if status!="game"
             loop do
                 move=@game.take_move(move_stack.size,status)
-                status=make_move(move,position)
+                status=make_move(move,position,turn)
                 break if !(status=="bad" || status=="err") 
             end
         end
     end
 
-    def make_move(move, position)
+    def make_move(move, position,turn)
         # part 1: verify syntactically correct moves. Move is correct if
         # a) is "resign" word
         # b) is "o-o" or "O-O" or "o-o-o" or "O-O-O" for castling special move
@@ -91,7 +92,7 @@ class GameManager
         # problem is to individuate the piece in position that can be the move
 
         move_piece=position.find {|location,piece| (piece.class == CHESS_DICTIONARY[selected_piece]) && 
-                                    piece.legal_move(location,[col,row],position,distinguish_mark,captured,promotion)}
+                                    piece.legal_move(location,[col,row],position,distinguish_mark,captured,promotion,turn)}
         return "err" if move_piece.nil?
         puts move_piece
         #fai la mossa

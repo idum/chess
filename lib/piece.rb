@@ -76,10 +76,9 @@ class Piece
             return false if captured && position[move].nil?
         end
 
-        stcol,strow=start_location #decomposed col and row of piece start location
-        trcol,trrow=move #decomposed col and row of piece target location
+        
         #now every piece can add her movement rule
-        return true
+        #return true
     end
 
     def test_position(c)
