@@ -34,26 +34,28 @@ class ChessBoard
         @start_position=setup_classic
     end
 
-    def show_game(game, move_stack, status)
+    def show_game
         case media
-        when "console" then putconsole(game, move_stack, status)
+        when "console" then putconsole
         end
     end
 
-    def take_move(n,err)
+    def take_move
         case media
-        when "console" then getconsole(n,err)
+        when "console" then getconsole
         end
     end
 
-    def putconsole(game={},move_stack,status)
+    def putconsole
+        position=Move.position
+        move_stack=Move.move_stack
         #building the board as string
-        st=""
+        st="\n"
         8.downto 1 do |r|
             row=r.to_s
             st+= Rainbow(row).color("FFFFFF")+"  "
             "a".upto "h" do |col|
-                game[[col,row]].nil? ? st+=Rainbow("  ").bg(@board[[col,row]]) : st+=Rainbow(game[[col,row]].avatar+" ").bg(@board[[col,row]])
+                position[[col,row]].nil? ? st+=Rainbow("  ").bg(@board[[col,row]]) : st+=Rainbow(position[[col,row]].avatar+" ").bg(@board[[col,row]])
             end
             st+="\n"
         end
@@ -71,7 +73,7 @@ class ChessBoard
         mv+="\n\n" if move_stack != []
 
         #end-game output
-        case status
+        case Move.status
         when "end_draw"
             mv+=" DRAW! "
         when "end_mate"
@@ -82,15 +84,16 @@ class ChessBoard
         puts st+"\n"+mv
     end
 
-    def getconsole(n,err)
-        mv=""
-        case err
-        when "bad" then mv="Move is not recognized, retry \n"
-        when "err" then mv="Move is not possible, retry \n"
+    def getconsole
+        begin
+            Move.white_move? ? (puts "White, make your move: ") : (puts "Black, make your move: ")
+            actual_move=gets.chomp
+            move=Move.new(actual_move)
+        rescue BadMoveError => e
+            puts "Move is not recognized! retry! \n"
+            retry
         end
-        n.size.odd? ? mv+="Nero Move!:" : mv+="White Move!:"
-        puts mv+" "
-        return gets.chomp
+        return move
     end
 
     def setup_board(variant="classic")

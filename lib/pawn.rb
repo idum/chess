@@ -4,14 +4,15 @@
 
 require_relative "piece"
 class Pawn < Piece
-    # King setting start with assign the right avatar (based by color)
-    # and a position and setting
-    # When the game will be created, istance will define starting position
+    # Color is the color piece "W" white or "B" black
+    # Status can be: "start" in setup phase, "game" when in game, "captured", when captured, "promoted", when promoted, (last two for future features), 
+    #  and turn when/if pawn made first double move, for en-passant special move.
+    # 
+    
 
-    def initialize (color, position="out", status="start")
+    def initialize (color, status="start")
         color=="B" ? @avatar=BLACKPAWN : @avatar=WHITEPAWN
         set_color(color)
-        @position = position
         @status = status
     end
 
@@ -32,6 +33,7 @@ class Pawn < Piece
     # 
 
     # note: we will develop this part when we will complete the class Game
+
 
     def legal_move(start_location, move, position,distinguish_mark,captured,promotion,turn)
         super

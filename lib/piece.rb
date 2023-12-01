@@ -5,6 +5,7 @@
 # "start", initial and "not yet moved" status, "ingame" during a game (moved), "capt" if the piece is captured and out of the board
 # position, that define position on the board; 
 # avatar: the unicode chess char
+# we need this class will be "cleared" from useless elements
 
 
 class Piece
@@ -24,44 +25,21 @@ class Piece
     BLACKKNIGHT = "\u265E"
     BLACKPAWN = "\u265F"
     
+    attr_reader :color, :status, :avatar
     
-
-    attr_reader :color, :position, :status, :avatar
- 
     def initialize
-        @color="W"
-        @position="out"
-        @status="start"
         @avatar=""
-    end
-
-    def set_color(c)
-        return false if !c.match?(/^[WB]{1}$/)
-        @color=c
-        return true
-    end
-
-    def set_status(c)
-        return false if !(["start","ingame","capt"].include? c)
-        @status=c
-        return true
-    end
-
-    def set_position(c)
-        return false if !test_position(c)
-        @position=c
-        return true
-    end
-
-    #forse non va bene
-    def set_avatar(c)
-        return false if !c.match?(/[\u2654-\u265F]/)
-        @avatar=c
-        return true
+        @color=""
+        @status=""
     end
 
     def to_s 
         @avatar
+    end
+
+    def set_color(color)
+        @color=color
+        
     end
 
     # in this part we will define interface models for pieces. 
