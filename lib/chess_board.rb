@@ -31,7 +31,7 @@ class ChessBoard
             end
             color==WHITESPACECOLOR ? color=BLACKSPACECOLOR : color=WHITESPACECOLOR
         end
-        @start_position=setup_classic
+        Move.start_position=setup_classic
     end
 
     def show_game
@@ -92,6 +92,9 @@ class ChessBoard
         rescue BadMoveError => e
             puts "Move is not recognized! retry! \n"
             retry
+        rescue ErrMoveError
+            puts "Move is impossible! retry! \n"
+            retry
         end
         return move
     end
@@ -99,7 +102,7 @@ class ChessBoard
     def setup_board(variant="classic")
         #this method is the crossway for different variant setup. Here we have only one variant: classic
         return "Sorry, this variant is not (yet?) implemented" if variant!="classic"
-        @start_position=setup_classic
+        Move.start_position=setup_classic
     end
 
     def setup_classic

@@ -5,6 +5,7 @@
 # we insert a class for manage bad move error
 
 class BadMoveError < RuntimeError; end
+class ErrMoveError < RuntimeError; end
 
 class Move 
 
@@ -18,14 +19,14 @@ class Move
     # @@status is a string and it show the status of the game: actually "game" or end_game conditions for graphical output pourpose
     @@status="game"
 
-    attr_reader :target, :piece, :occupant, :capture, :promote, :castling, :spec
+    attr_reader :coordinates, :piece, :capture, :promote, :castling, :spec
 
     def initialize(actual_move)
         @capture=false
         @castling=""
         @spec=""
-        @move=actual_move
-        raise BadMoveError if parser=="bad"
+        raise BadMoveError if parser(actual_move)=="bad"
+        raise ErrMoveError if (@@status=legal_move)==""
     end
 
     # Here follows class method for obtain status of the game: 
@@ -50,6 +51,10 @@ class Move
         return @@position
     end
 
+    def self.start_position=(pos)
+        @@position=pos
+    end
+
     # last_move return last move
     def self.last_move
         return @@game_hystory[-1].keys
@@ -64,6 +69,12 @@ class Move
         @@status=s
     end
 
+    def reset!
+        @@position={}
+        @@game_history=[]
+        @@status="game"
+    end
+
 
 
     # method parser (perhaps private) examine the move, and separe the target square, the Piece that have to do the move
@@ -71,7 +82,7 @@ class Move
     # and a special container for long and short castling.
     # parser return an error message "The Move is not Recognized" if the parsing is not correct or if the move is outside the board.
 
-    def parser(move=@move)
+    def parser(actual_move)
         # part 1: verify syntactically correct moves. Move is correct if
         # a) is "resign" word
         # b) is "o-o" or "O-O" or "o-o-o" or "O-O-O" for castling special move
@@ -83,7 +94,7 @@ class Move
         #    we add start col/row for distinguish : Rfg4 or R4g5 or Rfxg4
         # h) special promotion move when the Pawn will promote in another piece: d8=D
         # i) check and checkmate symbols are ignored in the input, they will be add in the move_stack record if needing
-        mv=move.split("")
+        mv=@actual_move.split("")
         mv.pop if mv[-1].match?(/[\+\#]/)
 
         case mv 
@@ -119,12 +130,31 @@ class Move
             else 
             return "bad"
         end       
-        # part 2: verify if the move is legal
-        # move is legal if it is into the board, 
-        
+        @coordinates=[col,row]
+        @piece_sym=piece_sym
         @spec=spec
         @promote=promote
     end
+
+    # legal_move find the piece that can do the move and test if the move is possible
+    # if the move is not possible, it return "" that raise an ErrMoveError
+    # if it is possible, it will generate a status that can be "game", normally, or one of end_game flags
+    def legal_move
+        candidates=@@position.find {|coord,piece| piece==CHESS_DICTIONARY[@piece_sym] &&
+                                    piece.legal_move(self,coord)}
+        case candidates.size
+        when 0
+            return ""
+        when 1
+            candidate=candidates[0]
+        else
+            <spariglia>
+        end
+        
+        make_move(candidate)
+    end
+
+
 
 
 

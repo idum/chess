@@ -16,15 +16,15 @@ class GameManager
     def initialize(variant="classic",media="console")
         @variant = variant
         @media = media
-        @game=ChessBoard.new(variant,media)
     end
 
     def new_game
-        position=@game.start_position
-        letsplay(position,"game")
+        @game=ChessBoard.new(@variant,@media)
+        Move.reset!
+        letsplay
     end
 
-    def letsplay(position,status)
+    def letsplay
         loop do
             move_stack=Move.move_stack
             @game.show_game 

@@ -27,10 +27,10 @@ class Piece
     
     attr_reader :color, :status, :avatar
     
-    def initialize
-        @avatar=""
-        @color=""
-        @status=""
+    def initialize(avatar="",color="",status="")
+        @avatar=avatar
+        @color=color
+        @status=status
     end
 
     def to_s 
@@ -46,12 +46,13 @@ class Piece
     # first is the test for legal movement in a generic way
     # a move is correct if a) respect test_position b) respect piece_movement
 
-    def legal_move(start_location, move, position,distinguish_mark,captured,promotion,turn)
+    def legal_move(move,piece_coord)
         # The move is not legal if target move is the same of start position or if the target location is occupied to a piece with same color
-        if (distinguish_mark.nil? ||!distinguish_mark.match?(/o-o/)) 
-            return false if move==start_location
-            return false if position[move] && position[move].color==position[start_location].color
-            return false if captured && position[move].nil?
+        if move.castling=="" 
+            return false if move.coordinates==piece_coord
+            return false if position[move.coordinates] && position[move.coordinates].color==@color
+            return false if move.capture && position[move.coordinates].nil?
+            return false if (@color=="W" <=> Move.white_move?)
         end
 
         

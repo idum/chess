@@ -12,7 +12,7 @@ class Pawn < Piece
 
     def initialize (color, status="start")
         color=="B" ? @avatar=BLACKPAWN : @avatar=WHITEPAWN
-        set_color(color)
+        @color=color
         @status = status
     end
 
@@ -35,53 +35,54 @@ class Pawn < Piece
     # note: we will develop this part when we will complete the class Game
 
 
-    def legal_move(start_location, move, position,distinguish_mark,captured,promotion,turn)
+    def legal_move(move,piece_coord)
         super
-        stcol,strow=start_location #decomposed col and row of piece start location
-        trcol,trrow=move #decomposed col and row of piece target location
-        return false if position[move] && !captured #3)
+        position=Move.position
+        stcol,strow=piece_coord #decomposed col and row of piece start location
+        trcol,trrow=move.coordinates #decomposed col and row of piece target location
+        return false if position[move.coordinates] && !move.capture #3)
         move_list=[]
-        case position[start_location].color
+        case @color
         when "W"
-            move_list+=[[stcol,mv_row(strow,1)]] if (strow.to_i<7) || !promotion.nil? # 1)
+            move_list+=[[stcol,mv_row(strow,1)]] if (strow.to_i<7) || move.promote=="" # 1)
             move_list+=[[stcol,mv_row(strow,2)]] if strow.to_i==2 #2)
-            move_list+=[[mv_col(stcol,1),mv_row(strow,1)]] if (captured && 
+            move_list+=[[mv_col(stcol,1),mv_row(strow,1)]] if (move.capture && 
                                                             position[mv_col(stcol,1),mv_row(strow,1)] &&
                                                             position[mv_col(stcol,1),mv_row(strow,1)].color=="B") #4)
-            move_list+=[[mv_col(stcol,-1),mv_row(strow,1)]] if (captured && 
+            move_list+=[[mv_col(stcol,-1),mv_row(strow,1)]] if (move.capture && 
                                                             position[mv_col(stcol,-1),mv_row(strow,1)] && 
                                                             position[mv_col(stcol,-1),mv_row(strow,1)].color=="B") #4)
-            move_list+=[[mv_col(stcol,1),mv_row(strow,1)]] if (captured &&
+            move_list+=[[mv_col(stcol,1),mv_row(strow,1)]] if (move.capture &&
                                                             position[mv_col(stcol,1),strow] &&
                                                             position[mv_col(stcol,1),strow].color=="B" &&
                                                             position[mv_col(stcol,1),strow].class==Pawn &&
-                                                            position[mv_col(stcol,1),strow].status.to_i==turn-1) #5)
+                                                            position[mv_col(stcol,1),strow].status.to_i==Move.actual_turn-1) #5)
             
             move_list+=[[mv_col(stcol,-1),mv_row(strow,1)]] if (captured &&
                                                                 position[mv_col(stcol,-1),strow] &&
                                                                 position[mv_col(stcol,-1),strow].color=="B" &&
                                                                 position[mv_col(stcol,-1),strow].class==Pawn &&
-                                                                position[mv_col(stcol,-1),strow].status.to_i==turn-1) #5)
+                                                                position[mv_col(stcol,-1),strow].status.to_i==Move.actual_turn-1) #5)
         when "B"
-            move_list+=[[stcol,mv_row(strow,-1)]] if (strow.to_i>1) || !promotion.nil? # 1)
+            move_list+=[[stcol,mv_row(strow,-1)]] if (strow.to_i>1) || !move.promote=="" # 1)
             move_list+=[[stcol,mv_row(strow,-2)]] if strow.to_i==7 #2)
-            move_list+=[[mv_col(stcol,1),mv_row(strow,-1)]] if (captured && 
+            move_list+=[[mv_col(stcol,1),mv_row(strow,-1)]] if (move.capture && 
                                                             position[mv_col(stcol,1),mv_row(strow,-1)] &&
                                                             position[mv_col(stcol,1),mv_row(strow,-1)].color=="B") #4)
-            move_list+=[[mv_col(stcol,-1),mv_row(strow,-1)]] if (captured && 
+            move_list+=[[mv_col(stcol,-1),mv_row(strow,-1)]] if (move.capture && 
                                                             position[mv_col(stcol,-1),mv_row(strow,-1)] && 
                                                             position[mv_col(stcol,-1),mv_row(strow,-1)].color=="B") #4)
-            move_list+=[[mv_col(stcol,1),mv_row(strow,-1)]] if (captured &&
+            move_list+=[[mv_col(stcol,1),mv_row(strow,-1)]] if (move.capture &&
                                                             position[mv_col(stcol,1),strow] &&
                                                             position[mv_col(stcol,1),strow].color=="B" &&
                                                             position[mv_col(stcol,1),strow].class==Pawn &&
-                                                            position[mv_col(stcol,1),strow].status.to_i==turn-1) #5)
+                                                            position[mv_col(stcol,1),strow].status.to_i==Move.actual_turn-1) #5)
             
-            move_list+=[[mv_col(stcol,-1),mv_row(strow,-1)]] if (captured &&
+            move_list+=[[mv_col(stcol,-1),mv_row(strow,-1)]] if (move.capture &&
                                                                 position[mv_col(stcol,-1),strow] &&
                                                                 position[mv_col(stcol,-1),strow].color=="B" &&
                                                                 position[mv_col(stcol,-1),strow].class==Pawn &&
-                                                                position[mv_col(stcol,-1),strow].status.to_i==turn-1) #5)
+                                                                position[mv_col(stcol,-1),strow].status.to_i==Move.actual_turn-1) #5)
         end
         return true if move_list.any?(move)
         return false                                   
