@@ -148,7 +148,14 @@ class Move
         when 1
             candidate=candidates[0]
         else
-            <spariglia>
+            case @spec
+            when /[1-8]/
+                candidate=candidates.first {|coord,_| coord[1]==@spec}
+            when /[a-h]/
+                candidate=candidates.first {|coord,_| coord[0]==@spec}
+            else
+                return ""
+            end
         end
         
         make_move(candidate)
