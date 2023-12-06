@@ -3,6 +3,14 @@
 # and it have methods for verify the correctness of the move.
 
 # we insert a class for manage bad move error
+require_relative "pawn"
+require_relative "knight"
+require_relative "rook"
+require_relative "bishop"
+require_relative "queen"
+require_relative "king"
+require_relative "piece"
+
 
 class BadMoveError < RuntimeError; end
 class ErrMoveError < RuntimeError; end
@@ -19,14 +27,16 @@ class Move
     # @@status is a string and it show the status of the game: actually "game" or end_game conditions for graphical output pourpose
     @@status="game"
 
-    attr_reader :coordinates, :piece, :capture, :promote, :castling, :spec
+    attr_accessor :coordinates, :piece_sym, :capture, :promote, :castling, :spec
 
     def initialize(actual_move)
         @capture=false
         @castling=""
         @spec=""
+        @promote=""
+        
         raise BadMoveError if parser(actual_move)=="bad"
-        raise ErrMoveError if (@@status=legal_move)==""
+        #raise ErrMoveError if (@@status=legal_move)==""
     end
 
     # Here follows class method for obtain status of the game: 
@@ -43,7 +53,7 @@ class Move
 
     # move_stack return the array of the moves
     def self.move_stack
-        return @@game_history.map {|h| h.keys}
+        return @@game_history.map {|h| h.keys}.flatten
     end
 
     # position return actual position
@@ -57,7 +67,7 @@ class Move
 
     # last_move return last move
     def self.last_move
-        return @@game_hystory[-1].keys
+        return @@game_history[-1].keys[0]
     end
 
     # game_status return the status of the game
@@ -69,14 +79,18 @@ class Move
         @@status=s
     end
 
-    def reset!
+    def self.reset!
         @@position={}
         @@game_history=[]
         @@status="game"
     end
 
+    def self.load_game(history)
+        @@game_history = history
+        @@position = history[-1].values[0]
+    end
 
-
+    
     # method parser (perhaps private) examine the move, and separe the target square, the Piece that have to do the move
     # and eventual other elements: capture flag, promotion piece, a specify element for resolve move conflicts, 
     # and a special container for long and short castling.
@@ -94,8 +108,9 @@ class Move
         #    we add start col/row for distinguish : Rfg4 or R4g5 or Rfxg4
         # h) special promotion move when the Pawn will promote in another piece: d8=D
         # i) check and checkmate symbols are ignored in the input, they will be add in the move_stack record if needing
-        mv=@actual_move.split("")
+        mv=actual_move.split("")
         mv.pop if mv[-1].match?(/[\+\#]/)
+        
 
         case mv 
             in ["r","e","s","i","g","n"] 
@@ -114,22 +129,28 @@ class Move
                 piece_sym="P"
             in [piece_sym,"x",col,row] if CHESS_DICTIONARY.keys.include?(piece_sym)
                 @capture=true
-            in [spec,"x",col,row] if spec.match?(/[a-h]|[1-8]/)
+            in [spec,"x",col,row] if spec.match?(/[a-h]/)
                 piece_sym="P"
                 @capture=true
+            in [colp,rowp,"x",col,row] if (colp.match?(/[a-h]/) && rowp.match?(/[1-8]/))
+                piece_sym="P"
+                @capture=true
+                spec=colp+rowp
             in [piece_sym, spec,col,row] if (spec.match?(/[a-h]|[1-8]/) && CHESS_DICTIONARY.keys.include?(piece_sym))
                 @capture=false
             in [piece_sym, spec,"x",col,row] if (spec.match?(/[a-h]|[1-8]/) && CHESS_DICTIONARY.keys.include?(piece_sym))
                 @capture=true
-            in [col,row,"=",promote] if CHESS_DICTIONARY.keys.include?(promote)
+            in [col,row,"=",promote] if (CHESS_DICTIONARY.keys.include?(promote) && row.match?(/[18]/))
                 piece_sym="P"
                 @capture=false
-            in [spec,"x",col,row,"=",promote] if (spec.match?(/[a-h]|[1-8]/) && CHESS_DICTIONARY.keys.include?(promote))
+            in [spec,"x",col,row,"=",promote] if (row.match?(/[18]/) && spec.match?(/[a-h]|[1-8]/) && CHESS_DICTIONARY.keys.include?(promote))
                 piece_sym="P"
                 @capture=true
             else 
             return "bad"
         end       
+        return bad if col && !col.match?(/[a-h]/)
+        return bad if row && !row.match?(/[1-8]/)
         @coordinates=[col,row]
         @piece_sym=piece_sym
         @spec=spec

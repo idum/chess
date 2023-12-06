@@ -27,10 +27,10 @@ class Piece
     
     attr_reader :color, :status, :avatar
     
-    def initialize(avatar="",color="",status="")
-        @avatar=avatar
-        @color=color
-        @status=status
+    def initialize(params={})
+        @avatar=params.fetch(:avatar, "")
+        @color=params.fetch(:color,"")
+        @status=params.fetch(:status,"")
     end
 
     def to_s 
@@ -44,29 +44,34 @@ class Piece
 
     # in this part we will define interface models for pieces. 
     # first is the test for legal movement in a generic way
-    # a move is correct if a) respect test_position b) respect piece_movement
+    
+    # legal_move will test if the piece that is/should be in piece_coord starting position can move in the target move
+    # it accept 2 variables: 
+    #   move that is the actual move we will test
+    #   piece_coord that is the (hypotetical or real) start position
+    
 
     def legal_move(move,piece_coord)
         # The move is not legal if target move is the same of start position or if the target location is occupied to a piece with same color
         if move.castling=="" 
             return false if move.coordinates==piece_coord
-            return false if position[move.coordinates] && position[move.coordinates].color==@color
-            return false if move.capture && position[move.coordinates].nil?
-            return false if (@color=="W" <=> Move.white_move?)
+            return false if (Move.position[move.coordinates]) && (Move.position[move.coordinates].color==@color)
+            return false if move.capture && Move.position[move.coordinates].nil?
+            return false if ((@color=="W") == (Move.white_move?))
         end
 
         
         #now every piece can add her movement rule
-        #return true
+        return true
     end
 
-    def test_position(c)
+    #def test_position(c)
         # test if out is a special test that can be useful for future graphical needings
         # return true if c=="out"
-        return false if c.size!=2
-        col,row = c.chars
-        return (col.match?(/[a-h]/) && row.match?(/[1-8]/)) 
-    end
+    #    return false if c.size!=2
+    #     col,row = c.chars
+    #     return (col.match?(/[a-h]/) && row.match?(/[1-8]/)) 
+    #end
 
     private
     #some methods for modify rows and colums

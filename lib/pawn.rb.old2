@@ -33,40 +33,44 @@ class Pawn < Piece
     #    valuation of those element require the boardgame actual status
     # 6) promotion, when a pawn reach the last row (8 for the white and 1 for the black). In this case, the pawn will be substitute with another
     #    piece. The piece is defined by the move. Ex: b8=Q means that the pawn will be promoted in a Queen
-    #
+    # 
+
    
+
+
     def legal_move(move,piece_coord)
         super
         position=Move.position
         stcol,strow=piece_coord #decomposed col and row of piece start location
         trcol,trrow=move.coordinates #decomposed col and row of piece target location
-        if (((mv_col(stcol,1)==trcol) || ((mv_col(stcol,-1)==trcol))) && move.capture) # capturing moves have to be right or left side
-            case @color
-                in "W"
-                    return true if (strow.match?(/[2-6]/) && (mv_row(strow,1)==trrow)) #4)
-                    return true if (strow=="4" && trrow=="4" && position[move.coordinates].status.to_i == Move.actual_turn) #5)
-                    return true if (move.promote && strow=="7" && trrow=="8") # 6) promotion while capturing a piece
-                in "B"
-                    return true if (strow.match?(/[2-6]/) && (mv_row(strow,-1)==trrow)) #4)
-                    return true if (strow=="5" && trrow=="5" && position[move.coordinates].status.to_i == Move.actual_turn) #5)
-                    return true if (move.promote && strow=="2" && trrow==1) # 6) promotion while capturing a piece
-            end
-        end
-        if (!move.capture && !position[move.coordinates]) #not capturing moves. Target square have to be empty
-            case @color
-                in "W" if strow=="2"
-                    return true if (mv_col(strow,2)==trrow) && (stcol==trcol) #2)
-                in "B" if strow=="7"
-                    return true if (mv_col(strow,-2)==trrow) && (stcol==trcol) #2)
-                in "W" if (strow.match?(/[2-6]/) && (mv_row(strow,1)==trrow))
-                    return true if stcol==trcol #1) 
-                in "B" if (strow.match?(/[2-6]/) && (mv_row(strow,-1)==trrow))
-                    return true if stcol==trcol #1)          
-                in "W" if (move.promote && strow="7")
-                    return true if (stcol==trcol && trrow=="8") # 6)   
-                in "B" if (move.promote && strow="2")
-                    return true if (stcol==trcol && trrow=="1") # 6)             
-            end
+        return false if position[move.coordinates] && !move.capture #3)
+        case @color
+            in "W" if strow=="2"
+                return true if (mv_col(strow,2)==trrow) && (stcol==trcol) #2)
+            in "B" if strow=="7"
+                return true if (mv_col(strow,-2)==trrow) && (stcol==trcol) #2)
+            in "W" if (strow.match?(/[2-6]/) && (mv_row(strow,1)==trrow))
+                return true if stcol==trcol #1)
+                return true if ((mv_col(stcol,1)==trcol) && move.capture) #4) capture to right
+                return true if ((mv_col(stcol,-1)==trcol) && move.capture) #4) capture to left
+            in "B" if (strow.match?(/[2-6]/) && (mv_row(strow,-1)==trrow))
+                return true if stcol==trcol #1)
+                return true if ((mv_col(stcol,1)==trcol) && move.capture) #4) capture to right
+                return true if ((mv_col(stcol,-1)==trcol) && move.capture) #4) capture to left
+            in "W" if (strow=="4" && trrow=="4" && position[move.coordinates].status.to_i == Move.actual_turn)
+                return true if ((mv_col(stcol,1)==trcol) && move.capture) #5) capture en_passant to right
+                return true if ((mv_col(stcol,-1)==trcol) && move.capture) #5) capture en_passant to left
+            in "B" if (strow=="5" && trrow=="5" && position[move.coordinates].status.to_i == Move.actual_turn)
+                return true if ((mv_col(stcol,1)==trcol) && move.capture) #5) capture en_passant to right
+                return true if ((mv_col(stcol,-1)==trcol) && move.capture) #5) capture en_passant to left
+            in "W" if (move.promote && strow="7")
+                return true if (stcol==trcol && !move.capture) 
+                return true if ((mv_col(stcol,1)==trcol) && move.capture) #5) capture en_passant to right
+                return true if ((mv_col(stcol,-1)==trcol) && move.capture) #5) capture en_passant to left
+            in "W" if (move.promote && strow="2")
+                return true if (stcol==trcol && !move.capture) 
+                return true if ((mv_col(stcol,1)==trcol) && move.capture) #5) capture en_passant to right
+                return true if ((mv_col(stcol,-1)==trcol) && move.capture) #5) capture en_passant to left
         end
         return false
     end
