@@ -149,8 +149,8 @@ class Move
             else 
             return "bad"
         end       
-        return bad if col && !col.match?(/[a-h]/)
-        return bad if row && !row.match?(/[1-8]/)
+        return "bad" if col && !col.match?(/[a-h]/)
+        return "bad" if row && !row.match?(/[1-8]/)
         @coordinates=[col,row]
         @piece_sym=piece_sym
         @spec=spec

@@ -43,7 +43,7 @@ end
 
 #part 2: test on move istance (PARTIAL: LEGAL MOVE IS NOT TESTED, REQUIRE FIRST TO VALIDATE PIECE subclasses)
 
-describe Move do
+describe "Move" do
     context "correct moves" do
         it "a) resign word" do
             expect{move=Move.new("resign")}.not_to raise_error
@@ -117,18 +117,18 @@ describe Move do
             expect(@move.capture).to be true
         end
     end
-    #context "bad moves" do
-    #    it "col outside board" do
-    #        expect {move=Move.new("k3")}.to raise_error(BadMoveError)
-    #    end
-    #    it "row outside board" do
-    #        expect {move=Move.new("a9")}.to raise_error(Errors::BadMoveError)
-    #    end
-    #    it "not recognized piece" do
-    #        expect {move=Move.new("Jf4")}.to raise_error(Errors::BadMoveError)
-    #    end
-    #    it "format capture not correct" do
-    #        expect {move=Move.new("N+f3")}.to raise_error(Errors::BadMoveError)
-    #    end
-    #end
+    context "bad moves" do
+        it "col outside board" do
+            expect {move=Move.new("k3")}.to raise_error(BadMoveError)
+        end
+        it "row outside board" do
+            expect {move=Move.new("a9")}.to raise_error(BadMoveError)
+        end
+        it "not recognized piece" do
+            expect {move=Move.new("Jf4")}.to raise_error(BadMoveError)
+        end
+        it "format capture not correct" do
+            expect {move=Move.new("N+f3")}.to raise_error(BadMoveError)
+        end
+    end
 end

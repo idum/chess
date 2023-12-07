@@ -12,6 +12,11 @@ require "./lib/pawn"
 
 
 describe Pawn do
-    
+    before(:all) do
+        @pawn=Pawn.new(color="W")
+        b={["b","4"] => Pawn.new(color="B"), ["f","5"] => Pawn.new(color="W")}
+        Move.start_position(b)
+    end
+
 
 end
