@@ -51,14 +51,11 @@ class Piece
     def legal_move(move,coordinates=@coordinates)
         # The move is not legal if target move is the same of start position or if the target location is occupied to a piece with same color
         if move.castling=="" 
-            return false if move.coordinates==coordinates
-            return false if (Move.position[move.coordinates]) && (Move.position[move.coordinates].color==@color)
-            return false if move.capture && Move.position[move.coordinates].nil?
-            return false if ((@color=="W") == (Move.white_move?))
+            return false if move.coordinates == coordinates
+            return false if Move.position[move.coordinates] && Move.position[move.coordinates].color==@color
+            #return false if move.capture && !Move.position[move.coordinates]
+            return false if ((@color=="W") != (Move.white_move?))
         end
-
-        
-        #now every piece can add her movement rule
         return true
     end
 

@@ -17,6 +17,9 @@ describe Move do
         @b={["a","4"] => piece, ["b","6"] => piece1}
         Move.load_game(a)
     end
+    after(:all) do
+        Move.reset!
+    end
 
     it "actual turn should be 2" do
         expect(Move.actual_turn).to eql 2

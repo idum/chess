@@ -61,7 +61,8 @@ class Move
         return @@position
     end
 
-    def self.start_position=(pos)
+    def self.start_position(pos)
+        @@position={}
         @@position=pos
     end
 

@@ -56,11 +56,11 @@ class Pawn < Piece
         if (!move.capture && !position[move.coordinates]) #not capturing moves. Target square have to be empty
             case @color
                 in "W" 
-                    return true if (mv_row(strow,2)==trrow) && (stcol==trcol) && strow=="2" #2)
+                    return true if (mv_row(strow,2)==trrow) && (stcol==trcol) && strow=="2" && !position[[stcol,"3"]] #2)
                     return true if (mv_row(strow,1)==trrow) && (stcol==trcol) && strow.match?(/[2-7]/)  #1)
                     return true if stcol==trcol && trrow=="8" &&move.promote && strow=="7" # 6) 
                 in "B" 
-                    return true if (mv_row(strow,-2)==trrow) && (stcol==trcol) && strow=="7" #2)              
+                    return true if (mv_row(strow,-2)==trrow) && (stcol==trcol) && strow=="7" && !position[[stcol,"6"]] #2)              
                     return true if (mv_row(strow,-1)==trrow) && (stcol==trcol) && strow.match?(/[2-7]/) #1)          
                     return true if stcol==trcol && trrow=="1" && move.promote && strow=="2"# 6)             
             end

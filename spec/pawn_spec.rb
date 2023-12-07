@@ -13,6 +13,7 @@ require "./lib/pawn"
 
 describe Pawn do
     before(:all) do
+        #Move.reset!
         @pawn=Pawn.new(color: "W", coordinates: ["e","2"])
         @bpawn=Pawn.new(color: "B", coordinates: ["e","7"])
         b={["b","5"] => Pawn.new(color: "B", status: "0"), 
@@ -26,14 +27,14 @@ describe Pawn do
            @pawn.coordinates => @pawn,
            @bpawn.coordinates => @bpawn
         }
-        Move.start_position=b
+        Move.start_position(b)
     end
 
     context "correct moves" do
         it "should do a 1-square move W" do
             expect(@pawn.legal_move(Move.new("e5"),["e","4"])).to be true
         end
-
+        
         it "should do a 1-square move B" do
             expect(@bpawn.legal_move(Move.new("e6"),["e","7"])).to be true
         end
@@ -110,6 +111,7 @@ describe Pawn do
         it "try to move with 2-square move where there is a enemy piece B" do
             expect(@bpawn.legal_move(Move.new("b5"),["b","7"])).to be false
         end
+
         it "try to capture with a not diagonal 1-square move W" do
             expect(@pawn.legal_move(Move.new("bxb4"),["b","3"])).to be false
         end
@@ -152,5 +154,19 @@ describe Pawn do
         it "try to capture an empty square B" do
             expect(@bpawn.legal_move(Move.new("cxb6"),["c","7"])).to be false
         end
-    end
+
+        it "try to move with 2-square move with a piece in front of the pawn" do
+            Move.reset!
+            b = {["a","3"] => Piece.new,
+                 ["a","6"] => Piece.new,
+                 ["a","2"] => @pawn,
+                 ["a","7"] => @bpawn
+                }
+            Move.start_position(b)
+            expect(@pawn.legal_move(Move.new("a4"),["a","2"])).to be false
+            expect(@bpawn.legal_move(Move.new("a5"),["a","7"])).to be false
+        end
+        
+    end 
 end
+    
