@@ -11,10 +11,9 @@ class Pawn < Piece
     # 
     
 
-    def initialize (color, status="start")
-        color=="B" ? @avatar=BLACKPAWN : @avatar=WHITEPAWN
-        @color=color
-        @status = status
+    def initialize (params={})
+        super
+        @color=="B" ? @avatar=BLACKPAWN : @avatar=WHITEPAWN
     end
 
     # We will define now one of the core method: the legal_move method
@@ -35,37 +34,35 @@ class Pawn < Piece
     #    piece. The piece is defined by the move. Ex: b8=Q means that the pawn will be promoted in a Queen
     #
    
-    def legal_move(move,piece_coord)
+    def legal_move(move,coordinates=@coordinates)
         super
         position=Move.position
-        stcol,strow=piece_coord #decomposed col and row of piece start location
+        stcol,strow=coordinates #decomposed col and row of piece start location
         trcol,trrow=move.coordinates #decomposed col and row of piece target location
         if (((mv_col(stcol,1)==trcol) || ((mv_col(stcol,-1)==trcol))) && move.capture) # capturing moves have to be right or left side
             case @color
                 in "W"
-                    return true if (strow.match?(/[2-6]/) && (mv_row(strow,1)==trrow)) #4)
-                    return true if (strow=="4" && trrow=="4" && position[move.coordinates].status.to_i == Move.actual_turn) #5)
-                    return true if (move.promote && strow=="7" && trrow=="8") # 6) promotion while capturing a piece
+                    return true if strow.match?(/[2-7]/) && (mv_row(strow,1)==trrow) && position[move.coordinates]#4)
+                    return true if strow=="5" && trrow=="6" && position[[trcol,"5"]] && 
+                                position[[trcol,"5"]].class==Pawn && (position[[trcol,"5"]].status.to_i + 1)== Move.actual_turn #5)
+                    return true if move.promote && strow=="7" && trrow=="8" && position[move.coordinates]# 6) promotion while capturing a piece
                 in "B"
-                    return true if (strow.match?(/[2-6]/) && (mv_row(strow,-1)==trrow)) #4)
-                    return true if (strow=="5" && trrow=="5" && position[move.coordinates].status.to_i == Move.actual_turn) #5)
-                    return true if (move.promote && strow=="2" && trrow==1) # 6) promotion while capturing a piece
+                    return true if strow.match?(/[2-7]/) && (mv_row(strow,-1)==trrow) && position[move.coordinates] #4)
+                    return true if strow=="4" && trrow=="3" && position[[trcol,"4"]] && 
+                                position[[trcol,"4"]].class==Pawn && (position[[trcol,"4"]].status.to_i + 1)== Move.actual_turn #5))
+                    return true if move.promote && strow=="2" && trrow==1 && position[move.coordinates]# 6) promotion while capturing a piece
             end
         end
         if (!move.capture && !position[move.coordinates]) #not capturing moves. Target square have to be empty
             case @color
-                in "W" if strow=="2"
-                    return true if (mv_col(strow,2)==trrow) && (stcol==trcol) #2)
-                in "B" if strow=="7"
-                    return true if (mv_col(strow,-2)==trrow) && (stcol==trcol) #2)
-                in "W" if (strow.match?(/[2-6]/) && (mv_row(strow,1)==trrow))
-                    return true if stcol==trcol #1) 
-                in "B" if (strow.match?(/[2-6]/) && (mv_row(strow,-1)==trrow))
-                    return true if stcol==trcol #1)          
-                in "W" if (move.promote && strow="7")
-                    return true if (stcol==trcol && trrow=="8") # 6)   
-                in "B" if (move.promote && strow="2")
-                    return true if (stcol==trcol && trrow=="1") # 6)             
+                in "W" 
+                    return true if (mv_row(strow,2)==trrow) && (stcol==trcol) && strow=="2" #2)
+                    return true if (mv_row(strow,1)==trrow) && (stcol==trcol) && strow.match?(/[2-7]/)  #1)
+                    return true if stcol==trcol && trrow=="8" &&move.promote && strow=="7" # 6) 
+                in "B" 
+                    return true if (mv_row(strow,-2)==trrow) && (stcol==trcol) && strow=="7" #2)              
+                    return true if (mv_row(strow,-1)==trrow) && (stcol==trcol) && strow.match?(/[2-7]/) #1)          
+                    return true if stcol==trcol && trrow=="1" && move.promote && strow=="2"# 6)             
             end
         end
         return false

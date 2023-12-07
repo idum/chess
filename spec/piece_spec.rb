@@ -21,8 +21,8 @@ describe "Piece" do
         piece1=Piece.new(avatar: "prova")
         expect(piece1.to_s).to eql "prova"
     end
-    it "set_color is correct" do
-        piece.set_color "B"
+    it "set color is correct" do
+        piece.color="B"
         expect(piece.color).to eql "B"
     end
 

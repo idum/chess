@@ -25,23 +25,20 @@ class Piece
     BLACKKNIGHT = "\u265E"
     BLACKPAWN = "\u265F"
     
-    attr_reader :color, :status, :avatar
+    attr_accessor :color, :status, :avatar, :coordinates
     
     def initialize(params={})
         @avatar=params.fetch(:avatar, "")
         @color=params.fetch(:color,"")
         @status=params.fetch(:status,"")
+        @coordinates=params.fetch(:coordinates,[])
     end
 
     def to_s 
         @avatar
     end
 
-    def set_color(color)
-        @color=color
-        
-    end
-
+    
     # in this part we will define interface models for pieces. 
     # first is the test for legal movement in a generic way
     
@@ -51,10 +48,10 @@ class Piece
     #   piece_coord that is the (hypotetical or real) start position
     
 
-    def legal_move(move,piece_coord)
+    def legal_move(move,coordinates=@coordinates)
         # The move is not legal if target move is the same of start position or if the target location is occupied to a piece with same color
         if move.castling=="" 
-            return false if move.coordinates==piece_coord
+            return false if move.coordinates==coordinates
             return false if (Move.position[move.coordinates]) && (Move.position[move.coordinates].color==@color)
             return false if move.capture && Move.position[move.coordinates].nil?
             return false if ((@color=="W") == (Move.white_move?))
