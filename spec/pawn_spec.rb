@@ -18,8 +18,8 @@ describe Pawn do
         @bpawn=Pawn.new(color: "B", coordinates: ["e","7"])
         b={["b","5"] => Pawn.new(color: "B", status: "0"), 
            ["f","4"] => Pawn.new(color: "W", status: "0"), 
-           ["b","1"] => Pawn.new(color: "B", status: "0"),
-           ["c","8"] => Pawn.new(color: "W", status: "0"),
+           ["b","1"] => Pawn.new(color: "W", status: "0"),
+           ["c","8"] => Pawn.new(color: "B", status: "0"),
            ["a","5"] => Pawn.new(color: "B", status: "-1"),
            ["h","4"] => Pawn.new(color: "W", status: "2"),
            ["d","5"] => Piece.new(color: "B", status: "0"),
@@ -93,6 +93,9 @@ describe Pawn do
     end
 
     context "wrong moves" do
+        it "try to move in the same square" do
+            expect(@pawn.legal_move(Move.new("h7"),["h","7"])).to be false
+        end
         it "try to move to 3 squares W" do
             expect(@pawn.legal_move(Move.new("e5"),["e","2"])).to be false
         end
