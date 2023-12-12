@@ -31,10 +31,8 @@ class Knight < Piece
         trcol,trrow=move.coordinates #decomposed col and row of piece target location
         #base test on position and piece color constrains
         return false if move.coordinates == coordinates
-        return false if Move.position[move.coordinates] && Move.position[move.coordinates].color==@color
-        #return false if move.capture && !Move.position[move.coordinates]   
-        #return false if !move.capture && Move.position[move.coordinates]  
-        return false if move.capture ^ Move.position[move.coordinates]
+        return false if position[move.coordinates] && position[move.coordinates].color==@color
+        return false if move.capture ^ position[move.coordinates]
         # 1) brutal mode: 8 test 
         if (mv_col(stcol,1)==trcol || mv_col(stcol,-1)==trcol)
             return true if mv_row(strow,2)==trrow || mv_row(strow,-2)==trrow 
