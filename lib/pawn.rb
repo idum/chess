@@ -3,7 +3,7 @@
 # Here we will define his behaviour
 
 require_relative "piece"
-require_relative "move"
+#require_relative "move"
 class Pawn < Piece
     # Color is the color piece "W" white or "B" black
     # Status can be: "start" in setup phase, "game" when in game, "captured", when captured, "promoted", when promoted, (last two for future features), 

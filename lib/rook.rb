@@ -2,14 +2,14 @@
 # It is a Piece, so it use that minimal interface.
 # Here we will define his behaviour
 require_relative "piece"
-require_relative "move"
+#require_relative "move"
 
 class Rook < Piece
-    # King setting start with assign the right avatar (based by color)
+    # Rook setting start with assign the right avatar (based by color)
      
     def initialize (params={})
         super
-        @color=="B" ? @avatar=BLACKPAWN : @avatar=WHITEPAWN
+        @color=="B" ? @avatar=BLACKROOK : @avatar=WHITEROOK
     end
 
     # We will define now one of the core method: the legal_move method
@@ -19,8 +19,6 @@ class Rook < Piece
     # if the target square is occupied to friend piece, movement is impossible.
     # if the target square is occupied to enemy piece, piece is captured.
     # valuation of those element require the boardgame actual status
-
-    # note: we will develop this part when we will complete the class Game
 
     def legal_move(move,coordinates=@coordinates)
         position=Move.position

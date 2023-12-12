@@ -84,6 +84,10 @@ class Piece
         return false
     end
 
+    def mv_distance(a,b)
+        return a.ord - b.ord
+    end
+
       
 
 end

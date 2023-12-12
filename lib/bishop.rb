@@ -2,17 +2,14 @@
 # It is a Piece, so it use that minimal interface.
 # Here we will define his behaviour
 require_relative "piece"
+#require_relative "move"
+
 
 class Bishop < Piece
-    # King setting start with assign the right avatar (based by color)
-    # and a position and setting
-    # When the game will be created, istance will define starting position
-
-    def initialize (color, position="out", status="start")
-        color=="B" ? @avatar=BLACKBISHOP: @avatar=WHITEBISHOP
-        set_color(color)
-        @position = position
-        @status = status
+    # Bishop setting start with assign the right avatar (based by color)
+    def initialize (params={})
+        super
+        @color=="B" ? @avatar=BLACKBISHOP : @avatar=WHITEBISHOP
     end
 
     # We will define now one of the core method: the legal_move method
@@ -22,16 +19,25 @@ class Bishop < Piece
     # if the target square is occupied to enemy piece, piece is captured.
     # valuation of those element require the boardgame actual status
 
-    # note: we will develop this part when we will complete the class Game
-
-    def legal_move(start_location, move, position,distinguish_mark,captured,promotion,turn)
-        super
-        stcol,strow=start_location #decomposed col and row of piece start location
-        trcol,trrow=move #decomposed col and row of piece target location
-        #legal_move_list=[[stcol,strow+1]] if (strow<7) || !promotion.nil?
-
-
-    end
+    def legal_move(move,coordinates=@coordinates)
+        position=Move.position
+        stcol,strow=coordinates #decomposed col and row of piece start location
+        trcol,trrow=move.coordinates #decomposed col and row of piece target location
+        #base test on position and piece color constrains
+        return false if move.coordinates == coordinates
+        return false if Move.position[move.coordinates] && Move.position[move.coordinates].color==@color
+        return false if move.capture ^ Move.position[move.coordinates]
+        col_distance=mv_distance(trcol,stcol)
+        row_distance=mv_distance(trrow,strow)
+        distance=col_distance.abs
+        # diagonal movement check
+        return false if col_distance.abs != row_distance.abs
+        return !(1..distance-2).any? {|i| position[[mv_col(stcol,i),mv_row(strow,i)]]} if col_distance>0 && row_distance>0
+        return !(1..distance-2).any? {|i| position[[mv_col(stcol,i),mv_row(strow,-i)]]} if col_distance>0 && row_distance<0
+        return !(1..distance-2).any? {|i| position[[mv_col(stcol,-i),mv_row(strow,i)]]} if col_distance<0 && row_distance>0
+        return !(1..distance-2).any? {|i| position[[mv_col(stcol,-i),mv_row(strow,-i)]]} if col_distance<0 && row_distance<0
+        true
+    end         
 end
 
 

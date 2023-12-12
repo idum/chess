@@ -3,7 +3,7 @@
 # Here we will define his behaviour
 
 require_relative "piece"
-require_relative "move"
+#require_relative "move"
 
 class Knight < Piece
     # King setting start with assign the right avatar (based by color)
@@ -12,7 +12,7 @@ class Knight < Piece
 
     def initialize (params={})
         super
-        @color=="B" ? @avatar=BLACKPAWN : @avatar=WHITEPAWN
+        @color=="B" ? @avatar=BLACKKNIGHT : @avatar=WHITEKNIGHT
     end
 
     # We will define now one of the core method: the legal_move method
