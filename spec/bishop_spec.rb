@@ -1,7 +1,7 @@
 require "./lib/bishop"
 
 
-# Class Bishop define rules for Bishop movement. A Rock can move on diagonals,
+# Class Bishop define rules for Bishop movement. A Bishop can move on diagonals,
 # so you can check the correctness of the move, verifing if absolute distance of row and col of the move is equal
 # For example Bishop move from a2 to c4 is ok because |a-c|=|4-2|=2
 # Bishop cannot jump over other pieces, but it can capture, in a move capture a target enemy piece

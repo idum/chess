@@ -7,7 +7,6 @@ require_relative "piece"
 
 class Knight < Piece
     # King setting start with assign the right avatar (based by color)
-    # and a position and setting
     # When the game will be created, istance will define starting position
 
     def initialize (params={})
