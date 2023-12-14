@@ -133,7 +133,7 @@ describe "Move" do
         end
         
     end
-    context "threatened_square method" do
+    describe "threatened_square method" do
         before do
             Move.position={
                 ["a","1"] => Rook.new(color: "B"),
@@ -159,4 +159,68 @@ describe "Move" do
             end
         end
     end    
+    describe "legal_move method" do
+        before do
+            Move.reset!
+            Move.position={
+                ["a","1"] => Rook.new(color: "W"),
+                ["c","5"] => Rook.new(color: "W"),
+                ["a","8"] => Rook.new(color: "W"),
+                ["b","6"] => Rook.new(color: "B"),
+                ["c","8"] => Piece.new(color: "B")
+            }
+        end
+        after do
+            Move.reset!
+        end
+        context "correct moves" do
+            it "Rook in c5 is the only piece that can move in c7 and it will do" do
+                move=Move.new("Rc7")
+                expect(move.legal_move).to eql(["c","5"])
+            end
+            it "Rook in c5 is the only white piece that can move in b5 and it will do" do
+                move=Move.new("Rb5")
+                expect(move.legal_move).to eql(["c","5"])
+            end
+            it "Rcc1 means that it will be the Rook in c5 to move in c1 and not the one in a1" do
+                move=Move.new("Rcc1")
+                expect(move.legal_move).to eql(["c","5"])
+            end
+            it "Rac1 means that it will be the Rook in a1 to move in c1 and not the one in c5" do
+                move=Move.new("Rac1")
+                expect(move.legal_move).to eql(["a","1"])
+            end
+            it "R1a3 means that it will be the Rook in a1 to move in a3" do
+                move=Move.new("R1a3")
+                expect(move.legal_move).to eql(["a","1"])
+            end
+            it "R1xc8 means that it will be the Rook in a1 to capture the piece in c8" do
+                move=Move.new("Raxc8")
+                expect(move.legal_move).to eql(["a","8"])
+            end
+        end
+        context "bad cases" do
+            it "Nf1 should produce NP = not possible move, because there is not a Knight on the board" do
+                move=Move.new("Nf1")
+                expect(move.legal_move).to eql("NP")
+            end
+            it "Rf3 should produce NP = not possible move, because no Rooks on the board can reach f3" do
+                move=Move.new("Rf3")
+                expect(move.legal_move).to eql("NP")
+            end
+            it "Rh6 should produce NP = not possible move, because no White Rooks on the board can reach h6 (but a black rook yes)" do
+                move=Move.new("Rh6")
+                expect(move.legal_move).to eql("NP")
+            end
+            it "Ra5 should produce NR = not recognized piece, because 3 pieces can reach a5 and there is no notation to resolve the dubt" do
+                move=Move.new("Ra5")
+                expect(move.legal_move).to eql("NR")
+            end
+            it "Raa5 should produce NR = not recognized piece, because there are 2 Rooks in col a that can reach a5" do
+                move=Move.new("Ra5")
+                expect(move.legal_move).to eql("NR")
+            end
+        end
+    end
+
 end

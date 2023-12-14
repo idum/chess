@@ -34,9 +34,7 @@ class Move
         @castling=""
         @spec=""
         @promote=""
-        
         raise BadMoveError if parser(actual_move)=="bad"
-        #raise ErrMoveError if (@@status=legal_move)==""
     end
 
     # Here follows class method for obtain status of the game: 
@@ -159,24 +157,23 @@ class Move
     # if the move is not possible, it return "" that raise an ErrMoveError
     # if it is possible, it will generate a status that can be "game", normally, or one of end_game flags
     def legal_move
-        candidates=@@position.find {|coord,piece| piece==CHESS_DICTIONARY[@piece_sym] &&
-                                    piece.legal_move(self,coord)}
-        case candidates.size
-        when 0
-            return ""
-        when 1
-            candidate=candidates[0]
-        else
+        candidates=@@position.select { |coord,piece| 
+            piece.class==CHESS_DICTIONARY[@piece_sym] &&
+            piece.color==Move.who_move &&
+            piece.legal_move(self,coord) &&
             case @spec
             when /[1-8]/
-                candidate=candidates.first {|coord,_| coord[1]==@spec}
+                coord[1]==@spec
             when /[a-h]/
-                candidate=candidates.first {|coord,_| coord[0]==@spec}
+                coord[0]==@spec
             else
-                return ""
+                true
             end
-        end
-        
+
+        }
+        return "NP" if candidates.size==0 #No piece can do the move
+        return "NR" if candidates.size>1 #not recognized piece     
+        return candidates.keys[0]
         #make_move(candidate)
     end
 
@@ -186,7 +183,7 @@ class Move
     # moves that avoid threat. If there are no moves, king is checkmated and game end with opponent victory
     # The method is also useful, for king movements. Infact King cannot move or make a capture move in a threatened_square.
     # King cannot also make a castling if king is threatened or is threatened one of the king-castling
-    def threatened_square(square,color)
+    def threatened_square(square,color=Move.who_move)
         oldpiece=Move.position[square]
         Move.position[square]=Piece.new(color: color)        
         a=Move.position.any? {|pos,piece|
