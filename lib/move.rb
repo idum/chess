@@ -132,6 +132,12 @@ class Move
                 piece_sym="P"
                 @capture=true
                 spec=colp+rowp
+            in [piece_sym,colp,rowp,col,row] if (colp.match?(/[a-h]/) && rowp.match?(/[1-8]/) && CHESS_DICTIONARY.keys.include?(piece_sym))
+                @capture=false
+                spec=colp+rowp
+            in [piece_sym,colp,rowp,"x",col,row] if (colp.match?(/[a-h]/) && rowp.match?(/[1-8]/) && CHESS_DICTIONARY.keys.include?(piece_sym))
+                @capture=true
+                spec=colp+rowp
             in [piece_sym, spec,col,row] if (spec.match?(/[a-h]|[1-8]/) && CHESS_DICTIONARY.keys.include?(piece_sym))
                 @capture=false
             in [piece_sym, spec,"x",col,row] if (spec.match?(/[a-h]|[1-8]/) && CHESS_DICTIONARY.keys.include?(piece_sym))
@@ -162,6 +168,8 @@ class Move
             piece.color==Move.who_move &&
             piece.legal_move(self,coord) &&
             case @spec
+            when /[a-h][1-8]/
+                coord==@spec.split("")
             when /[1-8]/
                 coord[1]==@spec
             when /[a-h]/
@@ -169,13 +177,73 @@ class Move
             else
                 true
             end
-
         }
         return "NP" if candidates.size==0 #No piece can do the move
-        return "NR" if candidates.size>1 #not recognized piece     
+        return "NR" if candidates.size>1 #not recognized piece   
         return candidates.keys[0]
-        #make_move(candidate)
     end
+
+    def make_move(square_from)
+        piece=@Move.position(square_from)
+        last_position=Move.position
+        case castling
+        when ""
+            #2-square pawn special move test, for en-passant flag status
+            if piece.class==Pawn
+                piece.status=actual_turn.to_s if @color=="W" && square_from[1]=="2" && @coordinates[1]=="4"
+                piece.status=actual_turn.to_s if @color=="B" && square_from[1]=="7" && @coordinates[1]=="5"
+            else
+                piece.status="moved"
+            end
+            Move.position.delete(square_from)
+            Move.position[@coordinates]=piece
+        when "short"
+            case @color
+            when "B"
+                king=Move.position.delete(["e","8"])
+                rook=Move.position.delete(["h","8"])
+                king.status="moved"
+                rook.status="moved"
+                Move.position(["g","8"])=king
+                Move.position(["f","8"])=rock
+            when "W"
+                king=Move.position.delete(["e","1"])
+                rook=Move.position.delete(["h","1"])
+                king.status="moved"
+                rook.status="moved"
+                Move.position(["g","1"])=king
+                Move.position(["f","1"])=rock
+            end
+        when "long"
+            case @color
+            when "B"
+                king=Move.position.delete(["e","8"])
+                rook=Move.position.delete(["a","8"])
+                king.status="moved"
+                rook.status="moved"
+                Move.position(["c","8"])=king
+                Move.position(["d","8"])=rock
+            when "W"
+                king=Move.position.delete(["e","1"])
+                rook=Move.position.delete(["a","1"])
+                king.status="moved"
+                rook.status="moved"
+                Move.position(["c","1"])=king
+                Move.position(["d","1"])=rock
+            end
+        end
+        king=Move.position.find {|pos,piece|
+            piece.class==King
+            piece.color==@color        
+        }
+        if threatened_square(king.keys[0])
+            Move.position=last_position
+            return "KC" #King is under check after the move, so the move is not correct
+        end
+        return true
+    end
+    #FARE I TEST PER LE ULTIME COSE FATTE
+
 
     # threatened_square is a key method. A square is threatened if there is at least an enemy piece that
     # can execute a capture move in that square if in this square there is a piece.
@@ -183,6 +251,7 @@ class Move
     # moves that avoid threat. If there are no moves, king is checkmated and game end with opponent victory
     # The method is also useful, for king movements. Infact King cannot move or make a capture move in a threatened_square.
     # King cannot also make a castling if king is threatened or is threatened one of the king-castling
+
     def threatened_square(square,color=Move.who_move)
         oldpiece=Move.position[square]
         Move.position[square]=Piece.new(color: color)        

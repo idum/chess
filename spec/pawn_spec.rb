@@ -17,13 +17,13 @@ describe Pawn do
         @pawn=Pawn.new(color: "W", coordinates: ["e","2"])
         @bpawn=Pawn.new(color: "B", coordinates: ["e","7"])
         Move.position={["b","5"] => Pawn.new(color: "B", status: "0"), 
-           ["f","4"] => Pawn.new(color: "W", status: "0"), 
+           ["f","4"] => Pawn.new(color: "W", status: "1"), 
            ["b","1"] => Pawn.new(color: "W", status: "0"),
            ["c","8"] => Pawn.new(color: "B", status: "0"),
            ["a","5"] => Pawn.new(color: "B", status: "-1"),
            ["h","4"] => Pawn.new(color: "W", status: "2"),
            ["d","5"] => Piece.new(color: "B", status: "0"),
-           ["d","4"] => Piece.new(color: "W", status: "0"),
+           ["d","4"] => Piece.new(color: "W", status: "1"),
            @pawn.coordinates => @pawn,
            @bpawn.coordinates => @bpawn
         }

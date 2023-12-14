@@ -198,6 +198,10 @@ describe "Move" do
                 move=Move.new("Raxc8")
                 expect(move.legal_move).to eql(["a","8"])
             end
+            it "Ra1a5 will move the right Rook in a1 even if 3 pieces can reach a5 " do
+                move=Move.new("Ra1a5")
+                expect(move.legal_move).to eql(["a","1"])
+            end
         end
         context "bad cases" do
             it "Nf1 should produce NP = not possible move, because there is not a Knight on the board" do
@@ -213,6 +217,10 @@ describe "Move" do
                 expect(move.legal_move).to eql("NP")
             end
             it "Ra5 should produce NR = not recognized piece, because 3 pieces can reach a5 and there is no notation to resolve the dubt" do
+                move=Move.new("Ra5")
+                expect(move.legal_move).to eql("NR")
+            end
+            it "Raa5 should produce NR = not recognized piece, because 3 pieces can reach a5 and the notation don't resolve dubt" do
                 move=Move.new("Ra5")
                 expect(move.legal_move).to eql("NR")
             end

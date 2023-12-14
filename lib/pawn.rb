@@ -55,7 +55,7 @@ class Pawn < Piece
                                    position[move.coordinates] && position[move.coordinates].color=="W" #4)
                     return true if strow=="4" && trrow=="3" && position[[trcol,"4"]] && 
                                    position[[trcol,"4"]].class==Pawn &&  position[[trcol,"4"]].color="W" && 
-                                   (position[[trcol,"4"]].status.to_i + 1)== Move.actual_turn #5))
+                                   (position[[trcol,"4"]].status.to_i)== Move.actual_turn #5))
                     return true if move.promote && strow=="2" && trrow==1 && 
                                    position[move.coordinates] && position[move.coordinates].color=="W"# 6) promotion while capturing a piece
             end
