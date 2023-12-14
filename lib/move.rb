@@ -17,7 +17,7 @@ class ErrMoveError < RuntimeError; end
 
 class Move 
 
-    CHESS_DICTIONARY = {"K" => King, "Q" => Queen, "R" => Rook, "B" => Bishop, "N" => Knight, "P" => Pawn}
+    CHESS_DICTIONARY = {"K" => King, "Q" => Queen, "R" => Rook, "B" => Bishop, "N" => Knight, "P" => Pawn, "0" => Piece}
     
     #Class variables for record the status of the game
     # @@position is a collection of hash in the form {[col,row] => Piece} and show the position of the pieces on the board in actual turn
@@ -180,14 +180,31 @@ class Move
             end
         end
         
-        make_move(candidate)
+        #make_move(candidate)
     end
 
-
-
-
-
+    # threatened_square is a key method. A square is threatened if there is at least an enemy piece that
+    # can execute a capture move in that square if in this square there is a piece.
+    # this is useful for king movement: infact, if king is in a threatened square, there are possible only
+    # moves that avoid threat. If there are no moves, king is checkmated and game end with opponent victory
+    # The method is also useful, for king movements. Infact King cannot move or make a capture move in a threatened_square.
+    # King cannot also make a castling if king is threatened or is threatened one of the king-castling
+    def threatened_square(square,color)
+        oldpiece=Move.position[square]
+        Move.position[square]=Piece.new(color: color)        
+        a=Move.position.any? {|pos,piece|
+            string_move=(CHESS_DICTIONARY.key(piece.class) + "x" + square[0]+square[1]) 
+            piece.legal_move(Move.new(string_move),pos)
+        }
+        oldpiece ? Move.position[square]=oldpiece :  Move.position.delete(square)
+        return a        
+    end
 end
+
+
+
+
+
         
     
 

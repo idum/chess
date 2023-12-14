@@ -1,5 +1,5 @@
 require "./lib/move"
-require "./lib/knight"
+require "./lib/piece"
 
 # class Knight define movement rule for chess piece Knight.
 # Its peculiar trait is the "L" movement

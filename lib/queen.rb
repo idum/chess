@@ -1,8 +1,9 @@
 # This is the Queen class. 
 # It is a Piece, so it use that minimal interface.
 # Here we will define his behaviour
+
 require_relative "piece"
-#require_relative "move"
+
 
 class Queen < Piece
     # Queen setting start with assign the right avatar (based by color)

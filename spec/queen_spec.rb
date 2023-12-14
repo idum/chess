@@ -1,4 +1,5 @@
-require "./lib/queen"
+require "./lib/move"
+require "./lib/piece"
 
 # Class Queen define rules for Queen movement. A Queen can move on diagonals and orthogonal
 # so you can check the correctness of the diagonal move, verifing if absolute distance of row and col of the move is equal

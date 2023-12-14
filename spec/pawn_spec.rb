@@ -1,5 +1,5 @@
 require "./lib/move"
-require "./lib/pawn"
+require "./lib/piece"
 
 # class Pawn define the movement rules for any pawn
 # it is probably the most complicate piece to define as model, due the many special rules 

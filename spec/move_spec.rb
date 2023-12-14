@@ -6,48 +6,46 @@ require "./lib/move"
 # 
 # test #1: Class methods and variable
 
-describe Move do
-    before(:all) do
-        piece=Piece.new(color: "W")
-        piece1=Piece.new(color: "B")
-        a=[]
-        a.push( {"a3" => {["a","3"] => piece, ["b","7"] => piece1}})
-        a.push({"b6" => {["a","3"] => piece, ["b","6"] => piece1}})
-        a.push({"a4" =>  {["a","4"] => piece, ["b","6"] => piece1}})
-        @b={["a","4"] => piece, ["b","6"] => piece1}
-        Move.load_game(a)
-    end
-    after(:all) do
+describe "Move" do
+    after :all do
         Move.reset!
     end
+    context "base test" do
+        before do
+            piece=Piece.new(color: "W")
+            piece1=Piece.new(color: "B")
+            a=[]
+            a.push( {"a3" => {["a","3"] => piece, ["b","7"] => piece1}})
+            a.push({"b6" => {["a","3"] => piece, ["b","6"] => piece1}})
+            a.push({"a4" =>  {["a","4"] => piece, ["b","6"] => piece1}})
+            @b={["a","4"] => piece, ["b","6"] => piece1}
+            Move.load_game(a)
+        end   
+        
+       
+        it "actual turn should be 2" do
+            expect(Move.actual_turn).to eql 2
+        end
 
-    it "actual turn should be 2" do
-        expect(Move.actual_turn).to eql 2
+        it "white_move? shold be false" do
+            expect(Move.white_move?).to be false
+        end
+
+        it "move_stack should be the b array" do
+            b=["a3","b6","a4"]
+            expect(Move.move_stack).to eql(b)
+        end
+
+        it "position should be last position, as @b" do
+            expect(Move.position).to eql(@b)
+        end
+
+        it "show the last move" do
+            expect(Move.last_move).to eql("a4")
+        end
+        
     end
-
-    it "white_move? shold be false" do
-        expect(Move.white_move?).to be false
-    end
-
-    it "move_stack should be the b array" do
-        b=["a3","b6","a4"]
-        expect(Move.move_stack).to eql(b)
-    end
-
-    it "position should be last position, as @b" do
-        expect(Move.position).to eql(@b)
-    end
-
-    it "show the last move" do
-        expect(Move.last_move).to eql("a4")
-    end
-      
-end
-
-#part 2: test on move istance (PARTIAL: LEGAL MOVE IS NOT TESTED, REQUIRE FIRST TO VALIDATE PIECE subclasses)
-
-describe "Move" do
-    context "correct moves" do
+    context "test correct move input" do
         it "a) resign word" do
             expect{move=Move.new("resign")}.not_to raise_error
         end
@@ -120,7 +118,7 @@ describe "Move" do
             expect(@move.capture).to be true
         end
     end
-    context "bad moves" do
+    context "bad move input" do
         it "col outside board" do
             expect {move=Move.new("k3")}.to raise_error(BadMoveError)
         end
@@ -133,5 +131,32 @@ describe "Move" do
         it "format capture not correct" do
             expect {move=Move.new("N+f3")}.to raise_error(BadMoveError)
         end
+        
     end
+    context "threatened_square method" do
+        before do
+            Move.start_position({
+                ["a","1"] => Rook.new(color: "B"),
+                ["a","3"] => Piece.new(color: "B"),
+                ["g","1"] => Rook.new(color: "W")
+            })
+            @move=Move.new("a4")
+            
+        end
+        after do
+            Move.reset!
+        end
+
+        context "correct threats" do
+            it "Rook threat f1" do
+                expect(@move.threatened_square(["f","1"],"W")).to be true
+            end
+            it "Rook threat h1 even if in g1 there is a friendly piece" do
+                expect(@move.threatened_square(["a","3"],"W")).to be true
+            end
+            it "Rook don't threat h1 because it don't reach the square" do
+                expect(@move.threatened_square(["h","1"],"W")).to be false
+            end
+        end
+    end    
 end

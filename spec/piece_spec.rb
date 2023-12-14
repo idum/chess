@@ -1,5 +1,5 @@
-require "./lib/piece"
 require "./lib/move"
+require "./lib/piece"
 
 # test for class Piece, interface for the other pieces. 
 # Piece interface is intended to supply some common tests for legal_move and some utilities
@@ -23,9 +23,9 @@ describe "Piece" do
         end
     end
   
-    context "legal_move test" do
-        it "should be nil (means true) if move is in an empty square" do
-            expect(@piece.legal_move(Move.new("Nc4"),["a","2"])).to be nil 
+    context "legal_move test (general piece don't move)" do
+        it "should be false if move is in an empty square" do
+            expect(@piece.legal_move(Move.new("Nc4"),["a","2"])).to be false
         end
 
         it "should be false if the square target of the move coincide with the starting square" do
@@ -36,8 +36,8 @@ describe "Piece" do
             expect(@piece.legal_move(Move.new("a4"),["b","2"])).to be false
         end
 
-        it "should be nil (means true) if the square target of the move is occupied to different_color piece" do
-            expect(@piece.legal_move(Move.new("Nxb4"),["b","2"])).to be nil
+        it "should be false if the square target of the move is occupied to different_color piece" do
+            expect(@piece.legal_move(Move.new("Nxb4"),["b","2"])).to be false
         end
 
      end

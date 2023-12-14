@@ -1,5 +1,5 @@
-require "./lib/rook"
 require "./lib/move"
+require "./lib/piece"
 
 #Class Rook define rules for Rook movement. A Rock can move ortogonally to its position, 
 # so along the row or the col from his starting position.

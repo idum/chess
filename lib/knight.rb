@@ -22,8 +22,6 @@ class Knight < Piece
     # 2) if the target square is occupied to enemy piece, piece is captured. 
     # valuation of those element require the boardgame actual status
 
-    # note: we will develop this part when we will complete the class Game
-
     def legal_move(move,coordinates=@coordinates)
         position=Move.position
         stcol,strow=coordinates #decomposed col and row of piece start location

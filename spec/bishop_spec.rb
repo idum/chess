@@ -1,4 +1,5 @@
-require "./lib/bishop"
+require "./lib/move"
+require "./lib/piece"
 
 
 # Class Bishop define rules for Bishop movement. A Bishop can move on diagonals,
