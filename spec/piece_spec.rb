@@ -10,7 +10,10 @@ describe "Piece" do
     before(:all) do
         @piece=Piece.new(color: "W")
         piece1=Piece.new(color: "B")
-        Move.start_position({["a","4"] => @piece, ["b","4"] => piece1})
+        Move.position={
+            ["a","4"] => @piece, 
+            ["b","4"] => piece1
+        }
     end
     after(:all) do
         Move.reset!

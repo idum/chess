@@ -86,7 +86,7 @@ class ChessBoard
 
     def getconsole
         begin
-            Move.white_move? ? (puts "White, make your move: ") : (puts "Black, make your move: ")
+            Move.who_move=="W" ? (puts "White, make your move: ") : (puts "Black, make your move: ")
             actual_move=gets.chomp
             move=Move.new(actual_move)
         rescue BadMoveError => e

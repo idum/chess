@@ -18,7 +18,7 @@ describe "Bishop" do
            ["b","5"] => Piece.new(color: "B"),
            ["c","6"] => Piece.new
         }
-        Move.start_position(b)
+        Move.position=b
     end
     after(:all) do
         Move.reset!

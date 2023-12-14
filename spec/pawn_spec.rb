@@ -16,7 +16,7 @@ describe Pawn do
         #Move.reset!
         @pawn=Pawn.new(color: "W", coordinates: ["e","2"])
         @bpawn=Pawn.new(color: "B", coordinates: ["e","7"])
-        b={["b","5"] => Pawn.new(color: "B", status: "0"), 
+        Move.position={["b","5"] => Pawn.new(color: "B", status: "0"), 
            ["f","4"] => Pawn.new(color: "W", status: "0"), 
            ["b","1"] => Pawn.new(color: "W", status: "0"),
            ["c","8"] => Pawn.new(color: "B", status: "0"),
@@ -27,7 +27,7 @@ describe Pawn do
            @pawn.coordinates => @pawn,
            @bpawn.coordinates => @bpawn
         }
-        Move.start_position(b)
+        
     end
 
     context "correct moves" do
@@ -159,13 +159,11 @@ describe Pawn do
         end
 
         it "try to move with 2-square move with a piece in front of the pawn" do
-            Move.reset!
-            b = {["a","3"] => Piece.new,
+            Move.position={["a","3"] => Piece.new,
                  ["a","6"] => Piece.new,
                  ["a","2"] => @pawn,
                  ["a","7"] => @bpawn
                 }
-            Move.start_position(b)
             expect(@pawn.legal_move(Move.new("a4"),["a","2"])).to be false
             expect(@bpawn.legal_move(Move.new("a5"),["a","7"])).to be false
         end

@@ -27,8 +27,8 @@ describe "Move" do
             expect(Move.actual_turn).to eql 2
         end
 
-        it "white_move? shold be false" do
-            expect(Move.white_move?).to be false
+        it "who_move shold be Black" do
+            expect(Move.who_move).to eql("B")
         end
 
         it "move_stack should be the b array" do
@@ -135,11 +135,11 @@ describe "Move" do
     end
     context "threatened_square method" do
         before do
-            Move.start_position({
+            Move.position={
                 ["a","1"] => Rook.new(color: "B"),
                 ["a","3"] => Piece.new(color: "B"),
                 ["g","1"] => Rook.new(color: "W")
-            })
+            }
             @move=Move.new("a4")
             
         end

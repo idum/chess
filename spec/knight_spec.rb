@@ -11,12 +11,12 @@ describe "Knight" do
     before(:all) do
         @knight=Knight.new(color: "W")
         @knight1=Knight.new(color: "B")
-        b={["e","5"] => Piece.new(color: "W"),
+        Move.position={["e","5"] => Piece.new(color: "W"),
            ["e","3"] => Piece.new(color: "B"),
            ["e","4"] => @knight,   
            ["f","3"] => @knight1   
         }
-        Move.start_position(b)
+        
     end
     after(:all) do
         Move.reset!

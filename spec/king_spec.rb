@@ -16,9 +16,9 @@ describe "King" do
     context "basic move test" do
         before do
             @king=King.new(color: "W")
-            b={["e","4"] => @king,
+            Move.position={["e","4"] => @king,
             }
-            Move.start_position(b)
+           
         end
         it "should fail to move in starting square" do
             expect(@king.legal_move(Move.new("Ke4"),["e","4"])).to be false
@@ -52,11 +52,11 @@ describe "King" do
     context "base capturing moves" do
         before do
             @king=King.new(color: "W")
-            b={["e","4"] => @king,
+            Move.position={["e","4"] => @king,
                ["d","3"] => Piece.new(color: "W"),
                ["d","5"] => Piece.new(color: "B")
             }
-            Move.start_position(b)
+           
         end
 
         it "should fail to move in an square occupied to friend piece" do
@@ -73,11 +73,11 @@ describe "King" do
     context "castling" do
         before do
             @king=King.new(color: "W")
-            b={["e","1"] => @king,
+            Move.position={["e","1"] => @king,
                ["h","1"] => Rook.new(color: "W"),
                ["a","1"] => Rook.new(color: "W"),
             }
-            Move.start_position(b)
+           
         end
         it "should short castling " do
             expect(@king.legal_move(Move.new("o-o"),["e","1"])).to be true
@@ -108,14 +108,14 @@ describe "King" do
         before do
             Move.reset!
             @king=King.new(color: "W")
-            b={["e","1"] => @king,
+            Move.position={["e","1"] => @king,
                ["a","1"] => Rook.new(color: "W"),
                ["c","3"] => Knight.new(color: "B"),
                ["d","2"] => Bishop.new(color: "B"),
                ["e","3"] => Pawn.new(color:"B")
                
             }
-            Move.start_position(b)
+            
         end
         it "should not move in d1" do
             expect(@king.legal_move(Move.new("Kd1"),["e","1"])).to be false

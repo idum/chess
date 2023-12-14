@@ -9,12 +9,12 @@ require "./lib/piece"
 describe "Rook" do
     before(:all) do
         @rook=Rook.new(color: "W")
-        b={["b","4"] => Piece.new(color: "B"),
+        Move.position={["b","4"] => Piece.new(color: "B"),
            ["f","4"] => @rook,
            ["f","6"] => Rook.new(color: "B"),
            ["f","7"] => Rook.new(color: "B"),
         }
-        Move.start_position(b)
+        
     end
     after(:all) do
         Move.reset!

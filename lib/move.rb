@@ -47,8 +47,8 @@ class Move
     end
 
     # white_move? return if actual move is for white (true) of for black (false)
-    def self.white_move?
-        @@game_history.size.even? 
+    def self.who_move
+        @@game_history.size.even? ? "W" : "B"
     end
 
     # move_stack return the array of the moves
@@ -61,9 +61,8 @@ class Move
         return @@position
     end
 
-    def self.start_position(pos)
-        @@position={}
-        @@position=pos
+    def self.position=(p)
+        @@position=p 
     end
 
     # last_move return last move
@@ -111,8 +110,6 @@ class Move
         # i) check and checkmate symbols are ignored in the input, they will be add in the move_stack record if needing
         mv=actual_move.split("")
         mv.pop if mv[-1].match?(/[\+\#]/)
-        
-
         case mv 
             in ["r","e","s","i","g","n"] 
                 Move.status="end_resign"
