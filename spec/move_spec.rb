@@ -230,5 +230,80 @@ describe "Move" do
             end
         end
     end
-
+    describe "make_move (white turn)" do
+        before do
+            Move.reset!
+            Move.position={
+                ["e","1"] => King.new(color: "W"),
+                ["a","1"] => Rook.new(color: "W"),
+                ["h","1"] => Rook.new(color: "W"),
+                ["h","2"] => Pawn.new(color: "W"),
+                ["e","6"] => Queen.new(color: "B"),
+                ["e","4"] => Knight.new(color: "W")
+            }
+        end
+        after do
+            Move.reset!
+        end
+        context "correct moves" do
+            it "Queen should move in b6 without problem" do
+                move=Move.new("Qb6")
+                expect(move.make_move(["e","6"])).to be true
+                expect(Move.position[["b","6"]].class).to eql(Queen)
+                expect(Move.position[["e","6"]]).to be nil
+            end
+            it "pawn will do 2-square move and his status will be actual turn" do
+                move=Move.new("h4")
+                expect(move.make_move(["h","2"])).to be true
+                expect(Move.position[["h","4"]].class).to eql(Pawn)
+                expect(Move.position[["h","2"]]).to be nil
+                expect(Move.position[["h","4"]].status).to eql(Move.actual_turn.to_s)
+            end
+            it "pawn will do 1-square move and his status will be moved" do
+                move=Move.new("h3")
+                expect(move.make_move(["h","2"])).to be true
+                expect(Move.position[["h","3"]].class).to eql(Pawn)
+                expect(Move.position[["h","2"]]).to be nil
+                expect(Move.position[["h","3"]].status).to eql("moved")
+            end
+            it "short Castling is made correctly " do
+                move=Move.new("o-o")
+                expect(move.make_move(["",""])).to be true
+                expect(Move.position[["g","1"]].class).to eql(King)
+                expect(Move.position[["g","1"]].status).to eql("moved")
+                expect(Move.position[["e","1"]]).to be nil
+                expect(Move.position[["f","1"]].class).to eql(Rook)
+                expect(Move.position[["f","1"]].status).to eql("moved")
+                expect(Move.position[["h","1"]]).to be nil
+            end
+            it "long Castling is made correctly " do
+                move=Move.new("o-o-o")
+                expect(move.make_move(["",""])).to be true
+                expect(Move.position[["c","1"]].class).to eql(King)
+                expect(Move.position[["c","1"]].status).to eql("moved")
+                expect(Move.position[["e","1"]]).to be nil
+                expect(Move.position[["d","1"]].class).to eql(Rook)
+                expect(Move.position[["d","1"]].status).to eql("moved")
+                expect(Move.position[["a","1"]]).to be nil
+            end
+        end
+        context "move causing king on-check condition" do
+            it "Knight cannot move in c3 because it put his King under check by Queen" do
+                move=Move.new("Nc3")
+                expect(move.make_move(["e","4"])).to eql("KC")
+            end
+            it "Queen is now in d1; Knight cannot move in c3 because king is under Check" do
+                Move.position.delete(["e","6"])
+                Move.position[["d","1"]]=Queen.new(color: "B")
+                move=Move.new("Nc3")
+                expect(move.make_move(["e","4"])).to eql("KC")
+            end
+            it "Queen is now in d2, menacing King; Knight can capture it in d2 and remove threat" do
+                Move.position.delete(["e","6"])
+                Move.position[["d","2"]]=Queen.new(color: "B")
+                move=Move.new("Nxd2")
+                expect(move.make_move(["e","4"])).to be true
+            end
+        end
+    end
 end

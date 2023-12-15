@@ -184,65 +184,66 @@ class Move
     end
 
     def make_move(square_from)
-        piece=@Move.position(square_from)
+        piece=Move.position[square_from]
+        color=Move.who_move
         last_position=Move.position
-        case castling
+        case @castling
         when ""
+            piece.status="moved"
             #2-square pawn special move test, for en-passant flag status
             if piece.class==Pawn
-                piece.status=actual_turn.to_s if @color=="W" && square_from[1]=="2" && @coordinates[1]=="4"
-                piece.status=actual_turn.to_s if @color=="B" && square_from[1]=="7" && @coordinates[1]=="5"
-            else
-                piece.status="moved"
+                piece.status=Move.actual_turn.to_s if color=="W" && square_from[1]=="2" && @coordinates[1]=="4"
+                piece.status=Move.actual_turn.to_s if color=="B" && square_from[1]=="7" && @coordinates[1]=="5"
             end
             Move.position.delete(square_from)
             Move.position[@coordinates]=piece
         when "short"
-            case @color
+            case color
             when "B"
                 king=Move.position.delete(["e","8"])
                 rook=Move.position.delete(["h","8"])
                 king.status="moved"
                 rook.status="moved"
-                Move.position(["g","8"])=king
-                Move.position(["f","8"])=rock
+                Move.position[["g","8"]]=king
+                Move.position[["f","8"]]=rook
             when "W"
                 king=Move.position.delete(["e","1"])
                 rook=Move.position.delete(["h","1"])
                 king.status="moved"
                 rook.status="moved"
-                Move.position(["g","1"])=king
-                Move.position(["f","1"])=rock
+                Move.position[["g","1"]]=king
+                Move.position[["f","1"]]=rook
             end
         when "long"
-            case @color
+            case color
             when "B"
                 king=Move.position.delete(["e","8"])
                 rook=Move.position.delete(["a","8"])
                 king.status="moved"
                 rook.status="moved"
-                Move.position(["c","8"])=king
-                Move.position(["d","8"])=rock
+                Move.position[["c","8"]]=king
+                Move.position[["d","8"]]=rook
             when "W"
                 king=Move.position.delete(["e","1"])
                 rook=Move.position.delete(["a","1"])
                 king.status="moved"
                 rook.status="moved"
-                Move.position(["c","1"])=king
-                Move.position(["d","1"])=rock
+                Move.position[["c","1"]]=king
+                Move.position[["d","1"]]=rook
             end
         end
-        king=Move.position.find {|pos,piece|
-            piece.class==King
-            piece.color==@color        
+        king=Move.position.select {|pos,piece|
+            piece.class==King &&
+            piece.color==color        
         }
+        
         if threatened_square(king.keys[0])
             Move.position=last_position
             return "KC" #King is under check after the move, so the move is not correct
         end
         return true
     end
-    #FARE I TEST PER LE ULTIME COSE FATTE
+   
 
 
     # threatened_square is a key method. A square is threatened if there is at least an enemy piece that
