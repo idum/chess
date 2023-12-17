@@ -23,7 +23,7 @@ class Knight < Piece
     # valuation of those element require the boardgame actual status
 
     def legal_move(move,coordinates=@coordinates)
-        position=Move.position
+        position=Game.position
         stcol,strow=coordinates #decomposed col and row of piece start location
         trcol,trrow=move.coordinates #decomposed col and row of piece target location
         #base test on position and piece color constrains

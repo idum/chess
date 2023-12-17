@@ -7,7 +7,8 @@
 # avatar: the unicode chess char
 # we need this class will be "cleared" from useless elements
 
-
+require_relative "move"
+require_relative "game"
 class Piece
     #unicode values for pieces"
 

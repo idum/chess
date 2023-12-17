@@ -12,7 +12,7 @@ describe "Queen" do
     before(:all) do
         @queen=Queen.new(color: "W")
         @queen1=Queen.new(color: "B")
-        Move.position={["e","4"] => @queen,
+        Game.position={["e","4"] => @queen,
            ["g","5"] => Bishop.new(color: "B"),
            ["e","3"] => Bishop.new(color: "W"),
            ["g","1"] => Bishop.new(color: "W"),
@@ -21,7 +21,7 @@ describe "Queen" do
         }
     end
     after(:all) do
-        Move.reset!
+        Game.reset!
     end
     context "base test" do
         context "base test" do

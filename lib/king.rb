@@ -26,7 +26,7 @@ class King < Piece
     # valuation of those element require the boardgame actual status
 
     def legal_move(move,coordinates=@coordinates)
-        position=Move.position
+        position=Game.position
         stcol,strow=coordinates #decomposed col and row of piece start location
         trcol,trrow=move.coordinates #decomposed col and row of piece target location
         #castling is a very special move and it use a different protocol
@@ -34,8 +34,8 @@ class King < Piece
         when ""
             #base test on position and piece color constrains
             return false if move.coordinates == coordinates
-            return false if Move.position[move.coordinates] && Move.position[move.coordinates].color==@color
-            return false if move.capture ^ Move.position[move.coordinates]
+            return false if Game.position[move.coordinates] && Game.position[move.coordinates].color==@color
+            return false if move.capture ^ Game.position[move.coordinates]
             # check if the move is at 1 square
             return false if mv_distance(stcol,trcol).abs>1 || mv_distance(strow,trrow).abs>1
             # check if in a move (capture or not) target square is threatened by enemy pieces
@@ -43,17 +43,17 @@ class King < Piece
         when "short" 
             @color=="W" ? castling_row="1" : castling_row="8"
             # king constrain
-            return false if Move.position[["e",castling_row]].class!=King || Move.position[["e",castling_row]].status=="moved"
+            return false if Game.position[["e",castling_row]].class!=King || Game.position[["e",castling_row]].status=="moved"
             # rook constrain 
-            return false if Move.position[["h",castling_row]].class!=Rook || Move.position[["h",castling_row]].status=="moved"
+            return false if Game.position[["h",castling_row]].class!=Rook || Game.position[["h",castling_row]].status=="moved"
             # threaten squares
             return !("e".."g").any? {|col| move.threatened_square([col,castling_row],@color)}
         when "long"
             @color=="W" ? castling_row="1" : castling_row="8"
             # king constrain
-            return false if Move.position[["e",castling_row]].class!=King || Move.position[["e",castling_row]].status=="moved"
+            return false if Game.position[["e",castling_row]].class!=King || Game.position[["e",castling_row]].status=="moved"
             # rook constrain 
-            return false if Move.position[["a",castling_row]].class!=Rook || Move.position[["a",castling_row]].status=="moved"
+            return false if Game.position[["a",castling_row]].class!=Rook || Game.position[["a",castling_row]].status=="moved"
             # threaten squares
             return !("c".."e").any? {|col| move.threatened_square([col,castling_row],@color)}
         end

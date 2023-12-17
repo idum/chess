@@ -4,16 +4,10 @@
 # For console, we use Rainbow gem for colorize the text
 
 require "rainbow"
-require_relative "king"
-require_relative "bishop"
-require_relative "rook"
-require_relative "knight"
-require_relative "queen"
-require_relative "pawn"
-require_relative "space"
+require "move"
 
 
-class ChessBoard 
+class ConsoleBoard 
     attr_reader :status, :board, :start_position, :media
     
     WHITESPACECOLOR="6495ED"
@@ -47,15 +41,13 @@ class ChessBoard
     end
 
     def putconsole
-        position=Move.position
-        move_stack=Move.move_stack
         #building the board as string
         st="\n"
         8.downto 1 do |r|
             row=r.to_s
             st+= Rainbow(row).color("FFFFFF")+"  "
             "a".upto "h" do |col|
-                position[[col,row]].nil? ? st+=Rainbow("  ").bg(@board[[col,row]]) : st+=Rainbow(position[[col,row]].avatar+" ").bg(@board[[col,row]])
+                Game.position[[col,row]].nil? ? st+=Rainbow("  ").bg(@board[[col,row]]) : st+=Rainbow(Game.position[[col,row]].avatar+" ").bg(@board[[col,row]])
             end
             st+="\n"
         end
@@ -64,31 +56,31 @@ class ChessBoard
 
         #building the actual move list 
         mv=""
-        move_stack.each_with_index do |move,index|
+        Game.move_stack.each_with_index do |move,index|
             break if move==""
             nrmove=index/2
             index.even? ? (mv+=nrmove.to_s+". "+move) : mv+="  "+Rainbow(move).bright+"  "
             mv+="\n" if (index+1)%8==0
         end
-        mv+="\n\n" if move_stack != []
+        mv+="\n\n" if Game.move_stack != []
 
         #end-game output
-        case Move.status
+        case Game.status
         when "end_draw"
             mv+=" DRAW! "
         when "end_mate"
             mv+=" CHECKMATE!"
         when "end_resign"
-            move_stack.size.odd? ? mv+=" BLACK RESIGN!" : mv+= " WHITE RESIGN!"
+            Game.move_stack.size.odd? ? mv+=" BLACK RESIGN!" : mv+= " WHITE RESIGN!"
         end
         puts st+"\n"+mv
     end
 
     def getconsole
         begin
-            Move.who_move=="W" ? (puts "White, make your move: ") : (puts "Black, make your move: ")
+            Game.who_move=="W" ? (puts "White, make your move: ") : (puts "Black, make your move: ")
             actual_move=gets.chomp
-            move=Move.new(actual_move)
+            move=Game.new(actual_move)
         rescue BadMoveError => e
             puts "Move is not recognized! retry! \n"
             retry

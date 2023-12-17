@@ -8,43 +8,9 @@ require "./lib/move"
 
 describe "Move" do
     after :all do
-        Move.reset!
+        Game.reset!
     end
-    context "base test" do
-        before do
-            piece=Piece.new(color: "W")
-            piece1=Piece.new(color: "B")
-            a=[]
-            a.push( {"a3" => {["a","3"] => piece, ["b","7"] => piece1}})
-            a.push({"b6" => {["a","3"] => piece, ["b","6"] => piece1}})
-            a.push({"a4" =>  {["a","4"] => piece, ["b","6"] => piece1}})
-            @b={["a","4"] => piece, ["b","6"] => piece1}
-            Move.load_game(a)
-        end   
-        
-       
-        it "actual turn should be 2" do
-            expect(Move.actual_turn).to eql 2
-        end
-
-        it "who_move shold be Black" do
-            expect(Move.who_move).to eql("B")
-        end
-
-        it "move_stack should be the b array" do
-            b=["a3","b6","a4"]
-            expect(Move.move_stack).to eql(b)
-        end
-
-        it "position should be last position, as @b" do
-            expect(Move.position).to eql(@b)
-        end
-
-        it "show the last move" do
-            expect(Move.last_move).to eql("a4")
-        end
-        
-    end
+   
     context "test correct move input" do
         it "a) resign word" do
             expect{move=Move.new("resign")}.not_to raise_error
@@ -120,31 +86,40 @@ describe "Move" do
     end
     context "bad move input" do
         it "col outside board" do
-            expect {move=Move.new("k3")}.to raise_error(BadMoveError)
+            move=Move.new("k3")
+            expect(Game.status).to eql("Error: wrong column")
         end
         it "row outside board" do
-            expect {move=Move.new("a9")}.to raise_error(BadMoveError)
+            move=Move.new("a9")
+            expect(Game.status).to eql("Error: wrong row")
         end
         it "not recognized piece" do
-            expect {move=Move.new("Jf4")}.to raise_error(BadMoveError)
+            move=Move.new("Fk3")
+            expect(Game.status).to eql("Error: Move not recognized")
         end
         it "format capture not correct" do
-            expect {move=Move.new("N+f3")}.to raise_error(BadMoveError)
+            move=Move.new("N+k3")
+            expect(Game.status).to eql("Error: Move not recognized")
+        end
+        it "try to promote in row different to 8 for W " do
+            Move.new("c7=Q")
+            expect(Game.status).to eql("Error: Move not recognized")
+        end
+        it "try to promote in row different to 1 for B " do   
+            Move.new("c2=Q")
+            expect(Game.status).to eql("Error: Move not recognized")
         end
         
     end
     describe "threatened_square method" do
         before do
-            Move.position={
+            Game.position={
                 ["a","1"] => Rook.new(color: "B"),
                 ["a","3"] => Piece.new(color: "B"),
                 ["g","1"] => Rook.new(color: "W")
             }
             @move=Move.new("a4")
             
-        end
-        after do
-            Move.reset!
         end
 
         context "correct threats" do
@@ -161,17 +136,13 @@ describe "Move" do
     end    
     describe "legal_move method" do
         before do
-            Move.reset!
-            Move.position={
+            Game.position={
                 ["a","1"] => Rook.new(color: "W"),
                 ["c","5"] => Rook.new(color: "W"),
                 ["a","8"] => Rook.new(color: "W"),
                 ["b","6"] => Rook.new(color: "B"),
                 ["c","8"] => Piece.new(color: "B")
             }
-        end
-        after do
-            Move.reset!
         end
         context "correct moves" do
             it "Rook in c5 is the only piece that can move in c7 and it will do" do
@@ -204,36 +175,35 @@ describe "Move" do
             end
         end
         context "bad cases" do
-            it "Nf1 should produce NP = not possible move, because there is not a Knight on the board" do
+            it "Nf1 should produce Error: Move is not possible, because there is not a Knight on the board" do
                 move=Move.new("Nf1")
-                expect(move.legal_move).to eql("NP")
+                expect(move.legal_move).to eql("Error: Move is not possible")
             end
-            it "Rf3 should produce NP = not possible move, because no Rooks on the board can reach f3" do
+            it "Rf3 should produce Error: Move is not possible, because no Rooks on the board can reach f3" do
                 move=Move.new("Rf3")
-                expect(move.legal_move).to eql("NP")
+                expect(move.legal_move).to eql("Error: Move is not possible")
             end
-            it "Rh6 should produce NP = not possible move, because no White Rooks on the board can reach h6 (but a black rook yes)" do
+            it "Rh6 should produce Error: Move is not possible, because no White Rooks on the board can reach h6 (but a black rook yes)" do
                 move=Move.new("Rh6")
-                expect(move.legal_move).to eql("NP")
+                expect(move.legal_move).to eql("Error: Move is not possible")
             end
-            it "Ra5 should produce NR = not recognized piece, because 3 pieces can reach a5 and there is no notation to resolve the dubt" do
+            it "Ra5 should produce Error: Move is ambiguous, because 3 pieces can reach a5 and there is no notation to resolve the dubt" do
                 move=Move.new("Ra5")
-                expect(move.legal_move).to eql("NR")
+                expect(move.legal_move).to eql("Error: Move is ambiguous")
             end
-            it "Raa5 should produce NR = not recognized piece, because 3 pieces can reach a5 and the notation don't resolve dubt" do
+            it "Raa5 should produce Error: Move is ambiguous, because 3 pieces can reach a5 and the notation don't resolve dubt" do
                 move=Move.new("Ra5")
-                expect(move.legal_move).to eql("NR")
+                expect(move.legal_move).to eql("Error: Move is ambiguous")
             end
-            it "Raa5 should produce NR = not recognized piece, because there are 2 Rooks in col a that can reach a5" do
+            it "Raa5 should produce Error: Move is ambiguous, because there are 2 Rooks in col a that can reach a5" do
                 move=Move.new("Ra5")
-                expect(move.legal_move).to eql("NR")
+                expect(move.legal_move).to eql("Error: Move is ambiguous")
             end
         end
     end
     describe "make_move (white turn)" do
         before do
-            Move.reset!
-            Move.position={
+            Game.position={
                 ["e","1"] => King.new(color: "W"),
                 ["a","1"] => Rook.new(color: "W"),
                 ["h","1"] => Rook.new(color: "W"),
@@ -242,65 +212,62 @@ describe "Move" do
                 ["e","4"] => Knight.new(color: "W")
             }
         end
-        after do
-            Move.reset!
-        end
         context "correct moves" do
             it "Queen should move in b6 without problem" do
                 move=Move.new("Qb6")
                 expect(move.make_move(["e","6"])).to be true
-                expect(Move.position[["b","6"]].class).to eql(Queen)
-                expect(Move.position[["e","6"]]).to be nil
+                expect(Game.position[["b","6"]].class).to eql(Queen)
+                expect(Game.position[["e","6"]]).to be nil
             end
             it "pawn will do 2-square move and his status will be actual turn" do
                 move=Move.new("h4")
                 expect(move.make_move(["h","2"])).to be true
-                expect(Move.position[["h","4"]].class).to eql(Pawn)
-                expect(Move.position[["h","2"]]).to be nil
-                expect(Move.position[["h","4"]].status).to eql(Move.actual_turn.to_s)
+                expect(Game.position[["h","4"]].class).to eql(Pawn)
+                expect(Game.position[["h","2"]]).to be nil
+                expect(Game.position[["h","4"]].status).to eql(Game.actual_turn.to_s)
             end
             it "pawn will do 1-square move and his status will be moved" do
                 move=Move.new("h3")
                 expect(move.make_move(["h","2"])).to be true
-                expect(Move.position[["h","3"]].class).to eql(Pawn)
-                expect(Move.position[["h","2"]]).to be nil
-                expect(Move.position[["h","3"]].status).to eql("moved")
+                expect(Game.position[["h","3"]].class).to eql(Pawn)
+                expect(Game.position[["h","2"]]).to be nil
+                expect(Game.position[["h","3"]].status).to eql("moved")
             end
             it "short Castling is made correctly " do
                 move=Move.new("o-o")
                 expect(move.make_move(["",""])).to be true
-                expect(Move.position[["g","1"]].class).to eql(King)
-                expect(Move.position[["g","1"]].status).to eql("moved")
-                expect(Move.position[["e","1"]]).to be nil
-                expect(Move.position[["f","1"]].class).to eql(Rook)
-                expect(Move.position[["f","1"]].status).to eql("moved")
-                expect(Move.position[["h","1"]]).to be nil
+                expect(Game.position[["g","1"]].class).to eql(King)
+                expect(Game.position[["g","1"]].status).to eql("moved")
+                expect(Game.position[["e","1"]]).to be nil
+                expect(Game.position[["f","1"]].class).to eql(Rook)
+                expect(Game.position[["f","1"]].status).to eql("moved")
+                expect(Game.position[["h","1"]]).to be nil
             end
             it "long Castling is made correctly " do
                 move=Move.new("o-o-o")
                 expect(move.make_move(["",""])).to be true
-                expect(Move.position[["c","1"]].class).to eql(King)
-                expect(Move.position[["c","1"]].status).to eql("moved")
-                expect(Move.position[["e","1"]]).to be nil
-                expect(Move.position[["d","1"]].class).to eql(Rook)
-                expect(Move.position[["d","1"]].status).to eql("moved")
-                expect(Move.position[["a","1"]]).to be nil
+                expect(Game.position[["c","1"]].class).to eql(King)
+                expect(Game.position[["c","1"]].status).to eql("moved")
+                expect(Game.position[["e","1"]]).to be nil
+                expect(Game.position[["d","1"]].class).to eql(Rook)
+                expect(Game.position[["d","1"]].status).to eql("moved")
+                expect(Game.position[["a","1"]]).to be nil
             end
         end
         context "move causing king on-check condition" do
             it "Knight cannot move in c3 because it put his King under check by Queen" do
                 move=Move.new("Nc3")
-                expect(move.make_move(["e","4"])).to eql("KC")
+                expect(move.make_move(["e","4"])).to eql("King is on check!")
             end
             it "Queen is now in d1; Knight cannot move in c3 because king is under Check" do
-                Move.position.delete(["e","6"])
-                Move.position[["d","1"]]=Queen.new(color: "B")
+                Game.position.delete(["e","6"])
+                Game.position[["d","1"]]=Queen.new(color: "B")
                 move=Move.new("Nc3")
-                expect(move.make_move(["e","4"])).to eql("KC")
+                expect(move.make_move(["e","4"])).to eql("King is on check!")
             end
             it "Queen is now in d2, menacing King; Knight can capture it in d2 and remove threat" do
-                Move.position.delete(["e","6"])
-                Move.position[["d","2"]]=Queen.new(color: "B")
+                Game.position.delete(["e","6"])
+                Game.position[["d","2"]]=Queen.new(color: "B")
                 move=Move.new("Nxd2")
                 expect(move.make_move(["e","4"])).to be true
             end

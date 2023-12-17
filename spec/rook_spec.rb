@@ -9,7 +9,7 @@ require "./lib/piece"
 describe "Rook" do
     before(:all) do
         @rook=Rook.new(color: "W")
-        Move.position={["b","4"] => Piece.new(color: "B"),
+        Game.position={["b","4"] => Piece.new(color: "B"),
            ["f","4"] => @rook,
            ["f","6"] => Rook.new(color: "B"),
            ["f","7"] => Rook.new(color: "B"),
@@ -17,7 +17,7 @@ describe "Rook" do
         
     end
     after(:all) do
-        Move.reset!
+        Game.reset!
     end
     context "base test" do
         it "should fail to move in starting square" do

@@ -10,13 +10,13 @@ describe "Piece" do
     before(:all) do
         @piece=Piece.new(color: "W")
         piece1=Piece.new(color: "B")
-        Move.position={
+        Game.position={
             ["a","4"] => @piece, 
             ["b","4"] => piece1
         }
     end
     after(:all) do
-        Move.reset!
+        Game.reset!
     end
 
     context "easy part" do

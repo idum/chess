@@ -16,7 +16,7 @@ describe Pawn do
         #Move.reset!
         @pawn=Pawn.new(color: "W", coordinates: ["e","2"])
         @bpawn=Pawn.new(color: "B", coordinates: ["e","7"])
-        Move.position={["b","5"] => Pawn.new(color: "B", status: "0"), 
+        Game.position={["b","5"] => Pawn.new(color: "B", status: "0"), 
            ["f","4"] => Pawn.new(color: "W", status: "1"), 
            ["b","1"] => Pawn.new(color: "W", status: "0"),
            ["c","8"] => Pawn.new(color: "B", status: "0"),
@@ -121,12 +121,6 @@ describe Pawn do
         it "try to capture with a not diagonal 1-square move B" do
             expect(@pawn.legal_move(Move.new("fxf5"),["f","4"])).to be false
         end
-        it "try to promote in row different to 8 for W (test in move)" do
-            expect {@pawn.legal_move(Move.new("c7=Q"),["c","6"])}.to raise_error(BadMoveError)
-        end
-        it "try to promote in row different to 1 for B (test in move)"do   
-            expect {@bpawn.legal_move(Move.new("c2=Q"),["c","3"])}.to raise_error(BadMoveError)
-        end
         it "try to promote when pawn is in row 6 W" do
             expect(@pawn.legal_move(Move.new("c8=Q"),["c","6"])).to be false
         end
@@ -159,7 +153,7 @@ describe Pawn do
         end
 
         it "try to move with 2-square move with a piece in front of the pawn" do
-            Move.position={["a","3"] => Piece.new,
+            Game.position={["a","3"] => Piece.new,
                  ["a","6"] => Piece.new,
                  ["a","2"] => @pawn,
                  ["a","7"] => @bpawn

@@ -20,13 +20,13 @@ class Bishop < Piece
     # valuation of those element require the boardgame actual status
 
     def legal_move(move,coordinates=@coordinates)
-        position=Move.position
+        position=Game.position
         stcol,strow=coordinates #decomposed col and row of piece start location
         trcol,trrow=move.coordinates #decomposed col and row of piece target location
         #base test on position and piece color constrains
         return false if move.coordinates == coordinates
-        return false if Move.position[move.coordinates] && Move.position[move.coordinates].color==@color
-        return false if move.capture ^ Move.position[move.coordinates]
+        return false if Game.position[move.coordinates] && Game.position[move.coordinates].color==@color
+        return false if move.capture ^ Game.position[move.coordinates]
         col_distance=mv_distance(trcol,stcol)
         row_distance=mv_distance(trrow,strow)
         distance=col_distance.abs

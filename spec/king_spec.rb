@@ -10,13 +10,13 @@ require "./lib/piece"
 describe "King" do
    
     after(:all) do
-        Move.reset!
+        Game.reset!
     end
 
     context "basic move test" do
         before do
             @king=King.new(color: "W")
-            Move.position={["e","4"] => @king,
+            Game.position={["e","4"] => @king,
             }
            
         end
@@ -52,7 +52,7 @@ describe "King" do
     context "base capturing moves" do
         before do
             @king=King.new(color: "W")
-            Move.position={["e","4"] => @king,
+            Game.position={["e","4"] => @king,
                ["d","3"] => Piece.new(color: "W"),
                ["d","5"] => Piece.new(color: "B")
             }
@@ -73,7 +73,7 @@ describe "King" do
     context "castling" do
         before do
             @king=King.new(color: "W")
-            Move.position={["e","1"] => @king,
+            Game.position={["e","1"] => @king,
                ["h","1"] => Rook.new(color: "W"),
                ["a","1"] => Rook.new(color: "W"),
             }
@@ -86,29 +86,29 @@ describe "King" do
             expect(@king.legal_move(Move.new("O-O-O"),["e","1"])).to be true
         end
         it "should don't allow short castling is Rook is moved" do
-            Move.position[["h","1"]].status="moved"
+            Game.position[["h","1"]].status="moved"
             expect(@king.legal_move(Move.new("o-o"),["e","1"])).to be false
         end
         it "should don't allow short castling is King is moved" do
-            Move.position[["e","1"]].status="moved"
+            Game.position[["e","1"]].status="moved"
             expect(@king.legal_move(Move.new("o-o-o"),["e","1"])).to be false
         end
         it "should don't allow short castling if King is not in the required square" do
-            Move.position.delete(["e","1"])
+            Game.position.delete(["e","1"])
             expect(@king.legal_move(Move.new("o-o"),["e","1"])).to be false
         end
         it "should don't allow short castling if Rook is not in the required square" do
-            Move.position[["e","1"]]=@king
-            Move.position.delete(["h","1"])
+            Game.position[["e","1"]]=@king
+            Game.position.delete(["h","1"])
             expect(@king.legal_move(Move.new("o-o"),["e","1"])).to be false
         end
     end
     
     context "threatened squares" do
         before do
-            Move.reset!
+            Game.reset!
             @king=King.new(color: "W")
-            Move.position={["e","1"] => @king,
+            Game.position={["e","1"] => @king,
                ["a","1"] => Rook.new(color: "W"),
                ["c","3"] => Knight.new(color: "B"),
                ["d","2"] => Bishop.new(color: "B"),

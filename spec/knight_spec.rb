@@ -11,7 +11,7 @@ describe "Knight" do
     before(:all) do
         @knight=Knight.new(color: "W")
         @knight1=Knight.new(color: "B")
-        Move.position={["e","5"] => Piece.new(color: "W"),
+        Game.position={["e","5"] => Piece.new(color: "W"),
            ["e","3"] => Piece.new(color: "B"),
            ["e","4"] => @knight,   
            ["f","3"] => @knight1   
@@ -19,7 +19,7 @@ describe "Knight" do
         
     end
     after(:all) do
-        Move.reset!
+        Game.reset!
     end
 
     context "correct move" do

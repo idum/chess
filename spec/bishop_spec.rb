@@ -18,10 +18,10 @@ describe "Bishop" do
            ["b","5"] => Piece.new(color: "B"),
            ["c","6"] => Piece.new
         }
-        Move.position=b
+        Game.position=b
     end
     after(:all) do
-        Move.reset!
+        Game.reset!
     end
     context "base test" do
         context "base test" do

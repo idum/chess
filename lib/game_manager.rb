@@ -1,9 +1,7 @@
 # Class GameManager is the base class of the app. It manage all the game, from creating the board to read the moves
 # execute the move and control end game conditions
-# In this first develop cycle, we accept input from stdin as string; the move will be checked and executed
-# and the output will be the board (as sequence of strings) and the eventual end-game condition
-# We will provide a log command for recall all the moves.
-# In eventual following develop cycles we will try to implement html page with graphical improvements.
+# It is a sort of gateway for the I/O interface selected. In this first cycle of develop we consider only console I/O
+# Game manager also open option for load saved games or pre-built positions, in next devcycs
 
 
 require_relative "chess_board"
@@ -15,26 +13,28 @@ class GameManager
    
     def initialize(variant="classic",media="console")
         @variant = variant
-        @media = media
-    end
-
-    def new_game
-        @game=ChessBoard.new(@variant,@media)
-        Move.reset!
-        letsplay
-    end
-
-    def letsplay
-        loop do
-            move_stack=Move.move_stack
-            @game.show_game 
-            return if Move.status!="game"
-            move=@game.take_move
-            
+        case media
+        when "console"
+            @game=ConsoleBoard.new
         end
     end
 
-    
+    def new_game
+        setup(@variant)
+        loop do
+            @game.show_game 
+            break if Game.status!="game"
+            @game.take_move            
+        end
+    end
+
+    def load_game
+        false
+    end
+
+    def load_position
+        false
+    end
 
 end        
 
