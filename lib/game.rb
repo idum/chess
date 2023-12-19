@@ -55,6 +55,15 @@ class Game
     def history=(history)
         self.load_game(history)
     end
+
+    def self.repetition_draw
+        a={}
+        history.each do |move,position|
+            a[position] ? a[position]+=1 : a[position]=1
+            return true if a[position]==3
+        end
+        return false
+    end
 end
 
 
