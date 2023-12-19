@@ -15,7 +15,7 @@ class Game
     @status="game"
 
     def self.actual_turn
-        @history.size/2 + 1
+        (@history.size/2) + 1
     end
 
     def self.who_move

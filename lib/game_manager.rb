@@ -4,7 +4,7 @@
 # Game manager also open option for load saved games or pre-built positions, in next devcycs
 
 
-require_relative "chess_board"
+require_relative "console_board"
 require_relative "move"
 
 
@@ -15,12 +15,11 @@ class GameManager
         @variant = variant
         case media
         when "console"
-            @game=ConsoleBoard.new
+            @game=ConsoleBoard.new(variant,media)
         end
     end
 
     def new_game
-        setup(@variant)
         loop do
             @game.show_game 
             break if Game.status!="game"

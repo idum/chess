@@ -4,7 +4,8 @@
 # For console, we use Rainbow gem for colorize the text
 
 require "rainbow"
-require "move"
+require_relative "move"
+require_relative "game"
 
 
 class ConsoleBoard 
@@ -12,9 +13,8 @@ class ConsoleBoard
     
     WHITESPACECOLOR="6495ED"
     BLACKSPACECOLOR="00FFFF"
-    def initialize(variant="classic",media="console",status="game")
+    def initialize(variant="classic",media="console")
         @media=media
-        @status=status
         @board=Hash.new{}
         color=WHITESPACECOLOR
         "1".upto "8" do |r|
@@ -25,7 +25,7 @@ class ConsoleBoard
             end
             color==WHITESPACECOLOR ? color=BLACKSPACECOLOR : color=WHITESPACECOLOR
         end
-        Move.start_position=setup_classic
+        setup_board(variant)
     end
 
     def show_game
@@ -58,7 +58,7 @@ class ConsoleBoard
         mv=""
         Game.move_stack.each_with_index do |move,index|
             break if move==""
-            nrmove=index/2
+            nrmove=index/2+1
             index.even? ? (mv+=nrmove.to_s+". "+move) : mv+="  "+Rainbow(move).bright+"  "
             mv+="\n" if (index+1)%8==0
         end
@@ -70,54 +70,50 @@ class ConsoleBoard
             mv+=" DRAW! "
         when "end_mate"
             mv+=" CHECKMATE!"
-        when "end_resign"
-            Game.move_stack.size.odd? ? mv+=" BLACK RESIGN!" : mv+= " WHITE RESIGN!"
+        when "Game Resigner"
+            Game.actual_move=="B" ? mv+=" BLACK RESIGN!" : mv+= " WHITE RESIGN!"
         end
         puts st+"\n"+mv
     end
 
     def getconsole
-        begin
+        loop do
             Game.who_move=="W" ? (puts "White, make your move: ") : (puts "Black, make your move: ")
             actual_move=gets.chomp
-            move=Game.new(actual_move)
-        rescue BadMoveError => e
-            puts "Move is not recognized! retry! \n"
-            retry
-        rescue ErrMoveError
-            puts "Move is impossible! retry! \n"
-            retry
+            move=Move.new(actual_move,true)
+            break if Game.status=="game"
+            putconsole
+            puts Game.status      
         end
-        return move
     end
 
     def setup_board(variant="classic")
         #this method is the crossway for different variant setup. Here we have only one variant: classic
         return "Sorry, this variant is not (yet?) implemented" if variant!="classic"
-        Move.start_position=setup_classic
+        Game.position=setup_classic
     end
 
     def setup_classic
         game={}
-        game[["a","1"]]=Rook.new("W","a1") #right white rook
-        game[["b","1"]]=Knight.new("W","b1") #right white knight
-        game[["c","1"]]=Bishop.new("W","c1") #right white bishop
-        game[["d","1"]]=Queen.new("W","d1") #white queen
-        game[["e","1"]]=King.new("W","e1") #white king
-        game[["f","1"]]=Bishop.new("W","f1") #left white bishop
-        game[["g","1"]]=Knight.new("W","g1") #left white knight
-        game[["h","1"]]=Rook.new("W","h1") #left black rook
-        game[["a","8"]]=Rook.new("B","a8") #right black rook
-        game[["b","8"]]=Knight.new("B","b8") #right black knight
-        game[["c","8"]]=Bishop.new("B","c8") #right black bishop
-        game[["d","8"]]=Queen.new("B","d8") #black queen
-        game[["e","8"]]=King.new("B","e8") #black king
-        game[["f","8"]]=Bishop.new("B","f8") #left black bishop
-        game[["g","8"]]=Knight.new("B","g8") #left black knight
-        game[["h","8"]]=Rook.new("B","h8") #left black rook
+        game[["a","1"]]=Rook.new(color: "W") #right white rook
+        game[["b","1"]]=Knight.new(color: "W") #right white knight
+        game[["c","1"]]=Bishop.new(color: "W") #right white bishop
+        game[["d","1"]]=Queen.new(color: "W") #white queen
+        game[["e","1"]]=King.new(color: "W") #white king
+        game[["f","1"]]=Bishop.new(color: "W") #left white bishop
+        game[["g","1"]]=Knight.new(color: "W") #left white knight
+        game[["h","1"]]=Rook.new(color: "B") #left black rook
+        game[["a","8"]]=Rook.new(color: "B") #right black rook
+        game[["b","8"]]=Knight.new(color: "B")  #right black knight
+        game[["c","8"]]=Bishop.new(color: "B")  #right black bishop
+        game[["d","8"]]=Queen.new(color: "B")  #black queen
+        game[["e","8"]]=King.new(color: "B")  #black king
+        game[["f","8"]]=Bishop.new(color: "B")  #left black bishop
+        game[["g","8"]]=Knight.new(color: "B")  #left black knight
+        game[["h","8"]]=Rook.new(color: "B")  #left black rook
         "a".upto "h" do |col|
-            game[[col,"2"]]=Pawn.new("W",col+"2")
-            game[[col,"7"]]=Pawn.new("B",col+"7")
+            game[[col,"2"]]=Pawn.new(color: "W") 
+            game[[col,"7"]]=Pawn.new(color: "B") 
         end
         return game
     end

@@ -13,22 +13,29 @@ require_relative "piece"
 require_relative "game"
 
 
-class BadMoveError < RuntimeError; end
-class ErrMoveError < RuntimeError; end
-
 class Move 
 
     CHESS_DICTIONARY = {"K" => King, "Q" => Queen, "R" => Rook, "B" => Bishop, "N" => Knight, "P" => Pawn, "0" => Piece}
     
     attr_accessor :coordinates, :piece_sym, :capture, :promote, :castling, :spec
 
-    def initialize(move_to_parse)
+    def initialize(move_to_parse,in_game=false)
+        Game.status="game"
         @capture=false
         @castling=""
         @spec=""
         @promote=""
         parser(move_to_parse)
-        return Game.status if Game.status !="game"
+        if in_game
+            return Game.status if Game.status !="game"
+            square=legal_move
+            return Game.status if Game.status !="game"
+            make_move(square)
+            return Game.status if Game.status !="game"
+            Game.history.push({move_to_parse => Game.position})
+        else
+            return false if Game.status!="game"
+        end
     end
 
     # Here follows class method for obtain status of the game: 
@@ -107,6 +114,7 @@ class Move
     # if the move is not possible, it return "" that raise an ErrMoveError
     # if it is possible, it will generate a status that can be "game", normally, or one of end_game flags
     def legal_move
+        #puts "From legal move, we have: @piece_sym=",@piece_sym," coord=",@coordinates
         candidates=Game.position.select { |coord,piece| 
             piece.class==CHESS_DICTIONARY[@piece_sym] &&
             piece.color==Game.who_move &&
@@ -130,7 +138,8 @@ class Move
     def make_move(square_from)
         piece=Game.position[square_from]
         color=Game.who_move
-        last_position=Game.position
+        last_position=Game.position.clone
+        #p "piece="+ piece.to_s+ " color="+ color
         case @castling
         when ""
             piece.status="moved"
