@@ -2,14 +2,13 @@
 # It is a Piece, so it use that minimal interface.
 # Here we will define his behaviour
 require_relative "piece"
-#require_relative "move"
-
 
 class Bishop < Piece
     # Bishop setting start with assign the right avatar (based by color)
     def initialize (params={})
         super
         @color=="B" ? @avatar=BLACKBISHOP : @avatar=WHITEBISHOP
+        @piecesym="B"
     end
 
     # We will define now one of the core method: the legal_move method
@@ -19,14 +18,15 @@ class Bishop < Piece
     # if the target square is occupied to enemy piece, piece is captured.
     # valuation of those element require the boardgame actual status
 
-    def legal_move(move,coordinates=@coordinates)
+    def legal_move(square_to,square_from,params={})
+        capture=params.fetch(:capture,false)
         position=Game.position
-        stcol,strow=coordinates #decomposed col and row of piece start location
-        trcol,trrow=move.coordinates #decomposed col and row of piece target location
+        stcol,strow=square_from #decomposed col and row of piece start location
+        trcol,trrow=square_to #decomposed col and row of piece target location
         #base test on position and piece color constrains
-        return false if move.coordinates == coordinates
-        return false if Game.position[move.coordinates] && Game.position[move.coordinates].color==@color
-        return false if move.capture ^ Game.position[move.coordinates]
+        return false if square_from == square_to
+        return false if position[square_to] && position[square_to].color==@color
+        return false if capture ^ position[square_to]
         col_distance=mv_distance(trcol,stcol)
         row_distance=mv_distance(trrow,strow)
         distance=col_distance.abs

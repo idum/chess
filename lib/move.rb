@@ -206,16 +206,7 @@ class Move
     # The method is also useful, for king movements. Infact King cannot move or make a capture move in a threatened_square.
     # King cannot also make a castling if king is threatened or is threatened one of the king-castling
 
-    def threatened_square(square,color=Game.who_move)
-        oldpiece=Game.position[square]
-        Game.position[square]=Piece.new(color: color)        
-        a=Game.position.any? {|pos,piece|
-            string_move=(CHESS_DICTIONARY.key(piece.class) + "x" + square[0]+square[1]) 
-            piece.legal_move(Move.new(string_move),pos)
-        }
-        oldpiece ? Game.position[square]=oldpiece :  Game.position.delete(square)
-        return a        
-    end
+   
 end
 
 

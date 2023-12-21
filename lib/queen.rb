@@ -24,14 +24,17 @@ class Queen < Piece
 
     # note: we will develop this part when we will complete the class Game
 
-    def legal_move(move,coordinates=@coordinates)
+    def legal_move(square_to,square_from,params={})
+        capture=params.fetch(:capture,false)
+        promotion_piece=params.fetch(:promotion_piece,"")
+        castling=params.fetch(:castling,"")
         position=Game.position
-        stcol,strow=coordinates #decomposed col and row of piece start location
-        trcol,trrow=move.coordinates #decomposed col and row of piece target location
+        stcol,strow=square_from #decomposed col and row of piece start location
+        trcol,trrow=square_to #decomposed col and row of piece target location
         #base test on position and piece color constrains
-        return false if move.coordinates == coordinates
-        return false if Game.position[move.coordinates] && Game.position[move.coordinates].color==@color
-        return false if move.capture ^ Game.position[move.coordinates]
+        return false if square_from == square_to
+        return false if position[square_to] && position[square_to].color==@color
+        return false if capture ^ position[square_to]
         col_distance=mv_distance(trcol,stcol)
         row_distance=mv_distance(trrow,strow)
         distance=col_distance.abs

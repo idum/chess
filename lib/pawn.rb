@@ -3,7 +3,7 @@
 # Here we will define his behaviour
 
 require_relative "piece"
-#require_relative "move"
+
 class Pawn < Piece
     # Color is the color piece "W" white or "B" black
     # Status can be: "start" in setup phase, "game" when in game, "captured", when captured, "promoted", when promoted, (last two for future features), 
@@ -14,6 +14,7 @@ class Pawn < Piece
     def initialize (params={})
         super
         @color=="B" ? @avatar=BLACKPAWN : @avatar=WHITEPAWN
+        @piecesym=""
     end
 
     # We will define now one of the core method: the legal_move method
@@ -34,42 +35,45 @@ class Pawn < Piece
     #    piece. The piece is defined by the move. Ex: b8=Q means that the pawn will be promoted in a Queen
     #
    
-    def legal_move(move,coordinates=@coordinates)      
+    def legal_move(square_to,square_from,params={})
+        capture=params.fetch(:capture,false)
+        promotion_piece=params.fetch(:promotion_piece, nil)
+        castling=params.fetch(:castling,"")    
         position=Game.position
-        stcol,strow=coordinates #decomposed col and row of piece start location
-        trcol,trrow=move.coordinates #decomposed col and row of piece target location
+        stcol,strow=square_from #decomposed col and row of piece start location
+        trcol,trrow=square_to #decomposed col and row of piece target location
         #basic test: movement in the same position 
-        return false if move.coordinates == coordinates
-        if (((mv_col(stcol,1)==trcol) || ((mv_col(stcol,-1)==trcol))) && move.capture) # capturing moves have to be right or left side
+        return false if square_from == square_to
+        if (((mv_col(stcol,1)==trcol) || ((mv_col(stcol,-1)==trcol))) && capture) # capturing moves have to be right or left side
             case @color
                 in "W"
-                    return true if strow.match?(/[2-7]/) && (mv_row(strow,1)==trrow) && 
-                                   position[move.coordinates] && position[move.coordinates].color=="B" #4)
+                    return true if strow.match?(/[2-6]/) && (mv_row(strow,1)==trrow) && 
+                                   position[square_to] && position[square_to].color=="B" #4)
                     return true if strow=="5" && trrow=="6" && position[[trcol,"5"]] && 
                                    position[[trcol,"5"]].class==Pawn && position[[trcol,"5"]].color=="B" &&
                                    (position[[trcol,"5"]].status.to_i + 1)== Game.actual_turn #5)
-                    return true if move.promote && strow=="7" && trrow=="8" && 
-                                   position[move.coordinates] && position[move.coordinates].color=="B"# 6) promotion while capturing a piece
+                    return true if promotion_piece && strow=="7" && trrow=="8" && 
+                                   position[square_to] && position[square_to].color=="B"# 6) promotion while capturing a piece
                 in "B"
-                    return true if strow.match?(/[2-7]/) && (mv_row(strow,-1)==trrow) && 
-                                   position[move.coordinates] && position[move.coordinates].color=="W" #4)
+                    return true if strow.match?(/[3-7]/) && (mv_row(strow,-1)==trrow) && 
+                                   position[square_to] && position[square_to].color=="W" #4)
                     return true if strow=="4" && trrow=="3" && position[[trcol,"4"]] && 
                                    position[[trcol,"4"]].class==Pawn &&  position[[trcol,"4"]].color="W" && 
                                    (position[[trcol,"4"]].status.to_i)== Game.actual_turn #5))
-                    return true if move.promote && strow=="2" && trrow==1 && 
-                                   position[move.coordinates] && position[move.coordinates].color=="W"# 6) promotion while capturing a piece
+                    return true if promotion_piece && strow=="2" && trrow=="1" && 
+                                   position[square_to] && position[square_to].color=="W"# 6) promotion while capturing a piece
             end
         end
-        if (!move.capture && !position[move.coordinates]) #not capturing moves. Target square have to be empty
+        if (!capture && !position[square_to]) #not capturing moves. Target square have to be empty
             case @color
                 in "W" 
                     return true if (mv_row(strow,2)==trrow) && (stcol==trcol) && strow=="2" && !position[[stcol,"3"]] #2)
-                    return true if (mv_row(strow,1)==trrow) && (stcol==trcol) && strow.match?(/[2-7]/)  #1)
-                    return true if stcol==trcol && trrow=="8" &&move.promote && strow=="7" # 6) 
+                    return true if (mv_row(strow,1)==trrow) && (stcol==trcol) && strow.match?(/[2-6]/)  #1)
+                    return true if stcol==trcol && trrow=="8" && promotion_piece && strow=="7" # 6) 
                 in "B" 
                     return true if (mv_row(strow,-2)==trrow) && (stcol==trcol) && strow=="7" && !position[[stcol,"6"]] #2)              
-                    return true if (mv_row(strow,-1)==trrow) && (stcol==trcol) && strow.match?(/[2-7]/) #1)          
-                    return true if stcol==trcol && trrow=="1" && move.promote && strow=="2"# 6)             
+                    return true if (mv_row(strow,-1)==trrow) && (stcol==trcol) && strow.match?(/[3-7]/) #1)          
+                    return true if stcol==trcol && trrow=="1" && promotion_piece && strow=="2"# 6)             
             end
         end
         return false

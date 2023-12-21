@@ -58,11 +58,30 @@ class Game
 
     def self.repetition_draw
         a={}
-        history.each do |move,position|
+        @history.each do |turn|
+            position=turn.values[0]
             a[position] ? a[position]+=1 : a[position]=1
             return true if a[position]==3
         end
         return false
+    end
+
+    def self.threatened_square(square,color=self.who_move)
+        old_position=Game.position
+        Game.position[square]=Piece.new(color: color)        
+        a=Game.position.any? {|pos,piece|
+            piece.legal_move(square,pos,capture: true)
+        }
+        Game.position=old_position
+        return a        
+    end
+
+    def self.check_condition(color=self.who_move)
+        king=Game.position.select {|pos,piece|
+            piece.class==King &&
+            piece.color==color        
+        }
+        self.threatened_square(king.keys[0])
     end
 end
 

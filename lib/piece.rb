@@ -26,13 +26,15 @@ class Piece
     BLACKKNIGHT = "\u265E"
     BLACKPAWN = "\u265F"
     
-    attr_accessor :color, :status, :avatar, :coordinates
+    attr_accessor :color, :status, :avatar, :coordinates, :piecesym
     
     def initialize(params={})
         @avatar=params.fetch(:avatar, "")
         @color=params.fetch(:color,"")
         @status=params.fetch(:status,"")
         @coordinates=params.fetch(:coordinates,[])
+        @piecesym="0"
+
     end
 
     def to_s 
@@ -49,21 +51,27 @@ class Piece
     #   piece_coord that is the (hypotetical or real) start position
     
 
-    def legal_move(move,coordinates=@coordinates)
+    def legal_move(square_to,square_from,params={})
+       
         # The move is not legal if target move is the same of start position or if the target location is occupied to a piece with same color
-        # Those are general rules. Each piece have eventual exceptions, so each piece have their legal_move implementation.
-        
+        # Those are general rules. Each piece have eventual exceptions, so each piece have their legal_move implementation.     
         return false if self.class==Piece
         
     end
 
-    #def test_position(c)
-        # test if out is a special test that can be useful for future graphical needings
-        # return true if c=="out"
-    #    return false if c.size!=2
-    #     col,row = c.chars
-    #     return (col.match?(/[a-h]/) && row.match?(/[1-8]/)) 
-    #end
+    def try_move(square_to,square_from,test=true)
+        old_position=Game.position
+        Game.position.delete(square_from)
+        Game.position[square_to]=self
+        if Game.check_condition(self.color)
+            Game.position=old_position
+            return false
+        end
+        Game.position=old_position if test
+        true
+    end
+            
+
 
     private
     #some methods for modify rows and colums

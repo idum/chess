@@ -22,14 +22,17 @@ class Knight < Piece
     # 2) if the target square is occupied to enemy piece, piece is captured. 
     # valuation of those element require the boardgame actual status
 
-    def legal_move(move,coordinates=@coordinates)
+    def legal_move(square_to,square_from,params={})
+        capture=params.fetch(:capture,false)
+        promotion_piece=params.fetch(:promotion_piece,"")
+        castling=params.fetch(:castling,"")
         position=Game.position
-        stcol,strow=coordinates #decomposed col and row of piece start location
-        trcol,trrow=move.coordinates #decomposed col and row of piece target location
+        stcol,strow=square_from #decomposed col and row of piece start location
+        trcol,trrow=square_to #decomposed col and row of piece target location
         #base test on position and piece color constrains
-        return false if move.coordinates == coordinates
-        return false if position[move.coordinates] && position[move.coordinates].color==@color
-        return false if move.capture ^ position[move.coordinates]
+        return false if square_from == square_to
+        return false if position[square_to] && position[square_to].color==@color
+        return false if capture ^ position[square_to]
         # 1) brutal mode: 8 test 
         if (mv_col(stcol,1)==trcol || mv_col(stcol,-1)==trcol)
             return true if mv_row(strow,2)==trrow || mv_row(strow,-2)==trrow 

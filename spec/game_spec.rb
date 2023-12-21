@@ -4,6 +4,9 @@
  # It is not meant to be istantiated, his use is by class methods
   
  describe "Game" do
+    after(:all) do
+        Game.reset!
+    end
     context "base test" do
         before do
             @piece=Piece.new(color: "W")
@@ -15,9 +18,6 @@
             @b={["a","4"] => @piece, ["b","6"] => @piece1}
             Game.load_game(@a)
         end 
-        after do
-            Game.reset!
-        end
 
         it "history should be as @a" do
             expect(Game.history).to eql(@a)
@@ -66,6 +66,26 @@
             expect(Game.position).to eql({})
             expect(Game.who_move).to eql("W")
             expect(Game.actual_turn).to eql(1)
+        end
+    end
+    context "repetition_draw" do
+        before do
+            a={
+                ["a","1"] => Piece.new,
+                ["a","2"] => Piece.new(color: "B")
+            }
+            b={
+                ["a","3"] => Piece.new
+            }
+            Game.history=[{"a1" => a}, {"a2" => b}, {"a3" => a}, {"a4" => b}, {"a5" => a}]
+        end
+
+        it "should be true: position a is present 3 times" do
+            expect(Game.repetition_draw).to be true
+        end
+        it "should be false if we turn back" do
+            Game.turn_back
+            expect(Game.repetition_draw).to be false
         end
     end
 end
