@@ -124,13 +124,13 @@ describe "Move" do
 
         context "correct threats" do
             it "Rook threat f1" do
-                expect(@move.threatened_square(["f","1"],"W")).to be true
+                expect(Game.threatened_square(["f","1"],"W")).to be true
             end
             it "Rook threat h1 even if in g1 there is a friendly piece" do
-                expect(@move.threatened_square(["a","3"],"W")).to be true
+                expect(Game.threatened_square(["a","3"],"W")).to be true
             end
             it "Rook don't threat h1 because it don't reach the square" do
-                expect(@move.threatened_square(["h","1"],"W")).to be false
+                expect(Game.threatened_square(["h","1"],"W")).to be false
             end
         end
     end    

@@ -24,7 +24,7 @@ class Move
         @capture=false
         @castling=""
         @spec=""
-        @promote=""
+        @promote=nil
         parser(move_to_parse)
         if in_game
             return Game.status if Game.status !="game"
@@ -32,7 +32,7 @@ class Move
             return Game.status if Game.status !="game"
             make_move(square)
             return Game.status if Game.status !="game"
-            Game.history.push({move_to_parse => Game.position})
+            #Game.history.push({move_to_parse => Game.position})
         else
             return false if Game.status!="game"
         end
@@ -107,7 +107,7 @@ class Move
         @coordinates=[col,row]
         @piece_sym=piece_sym
         @spec=spec
-        @promote=promote
+        @promote=promote 
     end
 
     # legal_move find the piece that can do the move and test if the move is possible
@@ -118,7 +118,7 @@ class Move
         candidates=Game.position.select { |coord,piece| 
             piece.class==CHESS_DICTIONARY[@piece_sym] &&
             piece.color==Game.who_move &&
-            piece.legal_move(self,coord) &&
+            piece.legal_move(@coordinates,coord, promotion_piece: @promote, capture: @capture, castling: @castling) &&
             case @spec
             when /[a-h][1-8]/
                 coord==@spec.split("")
@@ -139,7 +139,6 @@ class Move
         piece=Game.position[square_from]
         color=Game.who_move
         last_position=Game.position.clone
-        #p "piece="+ piece.to_s+ " color="+ color
         case @castling
         when ""
             piece.status="moved"
@@ -190,7 +189,7 @@ class Move
             piece.color==color        
         }
         
-        if threatened_square(king.keys[0])
+        if Game.threatened_square(king.keys[0])
             Game.position=last_position
             return Game.status="King is on check!" #King is under check after the move, so the move is not correct
         end

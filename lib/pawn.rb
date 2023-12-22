@@ -14,7 +14,7 @@ class Pawn < Piece
     def initialize (params={})
         super
         @color=="B" ? @avatar=BLACKPAWN : @avatar=WHITEPAWN
-        @piecesym=""
+        @piecesym="P"
     end
 
     # We will define now one of the core method: the legal_move method
