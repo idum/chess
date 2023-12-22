@@ -68,7 +68,7 @@ class Game
 
     def self.threatened_square(square,color=self.who_move)
         old_position=Game.position.clone
-        Game.position[square]=Piece.new(color: color)        
+        Game.position[square]=Piece.new(color: color)       
         a=Game.position.any? {|pos,piece|
             piece.legal_move(square,pos,capture: true)
         }
@@ -81,6 +81,7 @@ class Game
             piece.class==King &&
             piece.color==color        
         }
+        return false if king=={}
         self.threatened_square(king.keys[0])
     end
 end

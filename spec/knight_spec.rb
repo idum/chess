@@ -1,4 +1,4 @@
-require "./lib/piece"
+require "./lib/game"
 
 # class Knight define movement rule for chess piece Knight.
 # Its peculiar trait is the "L" movement
@@ -66,6 +66,36 @@ describe "Knight" do
         end
         it "cannot jump on friendly piece with capture flag" do
             expect(@knight.legal_move(["e","5"],["f","3"],capture: true)).to be false
+        end
+    end
+    context "try_move" do
+        it "it should be possible because king is not present" do
+            expect(@knight.legal_move(["d","6"],["e","4"])).to be true
+            expect(@knight.try_move(["d","6"],["e","4"])).to be true
+        end
+        it "it should be possible because king is not threatened" do
+            Game.position[["d","1"]]=King.new(color: "W")
+            expect(@knight.legal_move(["d","6"],["e","4"])).to be true
+            expect(Game.check_condition(@knight.color)).to be false
+            expect(@knight.try_move(["d","6"],["e","4"])).to be true
+            Game.position.delete(["d","1"])
+        end
+        it "it should not be possible because king is threatened" do
+            Game.position[["d","4"]]=King.new(color: "W")
+            expect(@knight.legal_move(["d","6"],["e","4"])).to be true
+            expect(Game.check_condition(@knight.color)).to be true
+            expect(@knight.try_move(["d","6"],["e","4"])).to be false
+        end
+        it "now @knight is in d2. He can capture enemy knight in f3 and remove the threat" do
+            Game.position[["d","2"]]=@knight
+            expect(@knight.legal_move(["f","3"],["d","2"], capture: true)).to be true
+            expect(Game.check_condition(@knight.color)).to be true
+            expect(@knight.try_move(["f","3"],["d","2"])).to be true
+        end
+        it "same move, with test flag = false, verify that the move if effectively done" do
+            expect(@knight.try_move(["f","3"],["d","2"],test=false)).to be true
+            expect(Game.position[["d","2"]]).to be nil
+            expect(Game.position[["f","3"]]).to eql(@knight)
         end
     end
 
