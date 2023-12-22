@@ -78,5 +78,23 @@ class Pawn < Piece
         end
         return false
     end
+
+    def try_move(square_to,square_from,test=true, params={})
+        promotion_piece = params.fetch(:promotion_piece, nil)
+        old_position=Game.position.clone
+        Game.position.delete([square_to[0],square_from[1]]) if Game.position[[square_to[0],square_from[1]]] && 
+                                                               Game.position[[square_to[0],square_from[1]]].class==Pawn &&
+                                                               square_from[0]!=square_to[0] && square_from[1]!=square_to[1]
+        Game.position.delete(square_from)
+        promotion_piece ? Game.position[square_to]=Move::CHESS_DICTIONARY[promotion_piece].new(color: @color) : Game.position[square_to]=self
+        if Game.check_condition(self.color)
+            Game.position=old_position
+            return false
+        end
+        Game.position=old_position if test
+        self.status=Game.actual_turn.to_s if color=="W" && square_from[1]=="2" && square_to[1]=="4" && !test
+        self.status=Game.actual_turn.to_s if color=="B" && square_from[1]=="7" && square_to[1]=="5" && !test
+        true
+    end
 end
     

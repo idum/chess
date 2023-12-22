@@ -1,4 +1,4 @@
-require "./lib/piece"
+require "./lib/game"
 
 # class Pawn define the movement rules for any pawn
 # it is probably the most complicate piece to define as model, due the many special rules 
@@ -12,7 +12,7 @@ require "./lib/piece"
 
 describe Pawn do
     before(:all) do
-        @pawn=Pawn.new(color: "W", coordinates: ["e","2"])
+        @pawn=Pawn.new(color: "W", coordinates: ["e","2"], status: "0")
         @bpawn=Pawn.new(color: "B", coordinates: ["e","7"])
         Game.position={["b","5"] => Pawn.new(color: "B", status: "0"), 
            ["f","4"] => Pawn.new(color: "W", status: "1"), 
@@ -22,8 +22,8 @@ describe Pawn do
            ["h","4"] => Pawn.new(color: "W", status: "2"),
            ["d","5"] => Piece.new(color: "B", status: "0"),
            ["d","4"] => Piece.new(color: "W", status: "1"),
-           @pawn.coordinates => @pawn,
-           @bpawn.coordinates => @bpawn
+           ["e","2"] => @pawn,
+           ["e","7"]=> @bpawn
         }     
     end
 
@@ -171,4 +171,49 @@ describe Pawn do
         
     end 
 end
+  
+context "try_move" do
+    before do
+        @pawn=Pawn.new(color: "W", coordinates: ["e","2"], status: "0")
+        @bpawn=Pawn.new(color: "B", coordinates: ["e","7"])
+        Game.position={
+            ["e","2"] => @pawn,
+            ["e","7"] => @bpawn
+        }
+    end
+    
+    it "it should be possible because king is not present,test if status is not adjourned(test mode)" do
+        expect(@pawn.legal_move(["e","4"],["e","2"])).to be true
+        expect(@pawn.try_move(["e","4"],["e","2"])).to be true
+        expect(@pawn.status).to eql("0")
+
+    end
+    it "it should be possible because king is not threatened" do
+        Game.position[["a","8"]]=King.new(color: "W")
+        expect(@pawn.legal_move(["e","4"],["e","2"])).to be true
+        expect(@pawn.try_move(["e","4"],["e","2"])).to be true
+        Game.position.delete(["a","8"])
+    end
+    it "it should not be possible because king is threatened" do
+        Game.position[["d","6"]]=King.new(color: "W")
+        expect(@pawn.legal_move(["e","4"],["e","2"])).to be true
+        expect(Game.check_condition(@pawn.color)).to be true
+        expect(@pawn.try_move(["e","4"],["e","2"])).to be false
+    end
+    it "now pawn is in f6 and can capture e7, removing the threat" do
+        Game.position[["d","6"]]=King.new(color: "W")
+        Game.position[["f","6"]]=@pawn
+        expect(@pawn.legal_move(["e","7"],["f","6"], capture: true)).to be true
+        expect(Game.check_condition(@pawn.color)).to be true
+        expect(@pawn.try_move(["e","7"],["f","6"])).to be true
+    end
+    it "same move, with test flag = false, verify that the move if effectively done" do
+        Game.position[["d","6"]]=King.new(color: "W")
+        Game.position[["f","6"]]=@pawn
+        expect(@pawn.try_move(["e","7"],["f","6"],test=false)).to be true
+        expect(Game.position[["f","6"]]).to be nil
+        expect(Game.position[["e","7"]]).to eql(@pawn)
+    end
+end
+
     

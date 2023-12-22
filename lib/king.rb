@@ -61,6 +61,52 @@ class King < Piece
             return !("c".."e").any? {|col| Game.threatened_square([col,castling_row],@color)}
         end
     end
+
+    def try_move(square_to,square_from,test=true, params={})
+        castling=params.fetch(:castling, "")
+        old_position=Game.position.clone
+        king,rook=nil
+        case castling
+        when ""
+            Game.position.delete(square_from)
+            Game.position[square_to]=self
+        when "short"
+            case color
+            when "B"
+                king=Game.position.delete(["e","8"])
+                rook=Game.position.delete(["h","8"])
+                Game.position[["g","8"]]=king
+                Game.position[["f","8"]]=rook
+            when "W"
+                king=Game.position.delete(["e","1"])
+                rook=Game.position.delete(["h","1"])
+                Game.position[["g","1"]]=king
+                Game.position[["f","1"]]=rook
+            end
+        when "long"
+            case color
+            when "B"
+                king=Game.position.delete(["e","8"])
+                rook=Game.position.delete(["a","8"])
+                Game.position[["c","8"]]=king
+                Game.position[["d","8"]]=rook
+            when "W"
+                king=Game.position.delete(["e","1"])
+                rook=Game.position.delete(["a","1"])
+                Game.position[["c","1"]]=king
+                Game.position[["d","1"]]=rook
+            end
+        end
+
+        if Game.check_condition(self.color)
+            Game.position=old_position
+            return false
+        end
+        Game.position=old_position if test
+        king.status="moved" if king
+        rook.status="moved" if rook
+        true
+    end
 end
 
 

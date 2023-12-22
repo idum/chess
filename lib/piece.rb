@@ -59,7 +59,7 @@ class Piece
         
     end
 
-    def try_move(square_to,square_from,test=true)
+    def try_move(square_to,square_from, test=true, params={})
         old_position=Game.position.clone
         Game.position.delete(square_from)
         Game.position[square_to]=self
