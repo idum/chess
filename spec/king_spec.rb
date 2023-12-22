@@ -107,7 +107,6 @@ describe "King" do
     
     context "threatened squares" do
         before do
-            Game.reset!
             @king=King.new(color: "W")
             Game.position={["e","1"] => @king,
                ["a","1"] => Rook.new(color: "W"),
@@ -127,4 +126,41 @@ describe "King" do
             expect(@king.legal_move([],["e","1"],castling: "short")).to be false
         end
     end
+    context "try_move" do
+        before do
+            @king=King.new(color: "W")
+            Game.position={
+                ["e","1"] => @king,
+                ["a","1"] => Rook.new(color: "W"),
+                ["h","1"] => Rook.new(color: "W")
+            }
+        end
+        # king moves are naturally checked for threats in movement in legal_move. Here is supposed that that control is made
+        it "@king should complete move in d1" do
+            expect(@king.try_move(["d","1"],["e","1"], test=false)).to be true
+            expect(Game.position[["d","1"]]).to eql(@king)
+            expect(Game.position[["e","1"]]).to be nil
+            expect(@king.status).to eql "moved"
+        end
+        it "@king should long castling" do
+            expect(@king.try_move("","",test=false, castling:"long")).to be true
+            expect(Game.position[["c","1"]]).to eql(@king)
+            expect(Game.position[["e","1"]]).to be nil
+            expect(@king.status).to eql "moved"
+            expect(Game.position[["d","1"]].class).to eql(Rook)
+            expect(Game.position[["a","1"]]).to be nil
+            expect(Game.position[["d","1"]].status).to eql "moved"
+        end
+        it "@king should short castling" do
+            expect(@king.try_move("","",test=false, castling:"short")).to be true
+            expect(Game.position[["g","1"]]).to eql(@king)
+            expect(Game.position[["e","1"]]).to be nil
+            expect(@king.status).to eql "moved"
+            expect(Game.position[["f","1"]].class).to eql(Rook)
+            expect(Game.position[["h","1"]]).to be nil
+            expect(Game.position[["f","1"]].status).to eql "moved"
+        end
+
+    end
+
 end

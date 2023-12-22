@@ -214,6 +214,19 @@ context "try_move" do
         expect(Game.position[["f","6"]]).to be nil
         expect(Game.position[["e","7"]]).to eql(@pawn)
     end
+    it "test en_passant" do
+        Game.position[["b","5"]]=Pawn.new(color: "B", status: "-1")
+        Game.position[["c","5"]]=@pawn
+        expect(@pawn.try_move(["b","6"],["c","5"], test=false)).to be true
+        expect(Game.position[["b","5"]]).to be nil
+        expect(Game.position[["b","6"]]).to eql(@pawn)
+    end
+    it "test promotion" do
+        Game.position[["b","7"]]=@pawn
+        expect(@pawn.try_move(["b","8"],["b","7"], test=false, promotion_piece: "Q")).to be true
+        expect(Game.position[["b","8"]].class).to eql(Queen)
+    end
+
 end
 
     

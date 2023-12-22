@@ -103,7 +103,7 @@ class King < Piece
             return false
         end
         Game.position=old_position if test
-        king.status="moved" if king
+        self.status="moved" 
         rook.status="moved" if rook
         true
     end
