@@ -10,6 +10,7 @@ class Rook < Piece
     def initialize (params={})
         super
         @color=="B" ? @avatar=BLACKROOK : @avatar=WHITEROOK
+        @piecesym="R"
     end
 
     # We will define now one of the core method: the legal_move method

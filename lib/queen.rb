@@ -13,6 +13,7 @@ class Queen < Piece
     def initialize (params={})
         super
         @color=="B" ? @avatar=BLACKQUEEN : @avatar=WHITEQUEEN
+        @piecesym="Q"
     end
 
     # We will define now one of the core method: the legal_move method

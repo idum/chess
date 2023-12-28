@@ -12,7 +12,7 @@ class Game
 
     @position={}
     @history=[]
-    @status=""
+    @status="game"
     @error=""
 
     def self.actual_turn
@@ -35,6 +35,7 @@ class Game
         @position={}
         @history=[]
         @status="game"
+        @error=""
     end
 
     def self.save_move(move)

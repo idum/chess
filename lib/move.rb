@@ -28,7 +28,7 @@ class Move
         parser(move_to_parse)
         legal_move if Game.error=="" && in_game
         try_move if Game.error=="" && in_game
-        Game.save_move(move_to_parse)
+        Game.save_move(move_to_parse) if Game.error=="" && in_game
     end
 
     # Here follows class method for obtain status of the game: 
@@ -108,7 +108,7 @@ class Move
     # if the move is not possible, it return "" that raise an ErrMoveError
     # if it is possible, it will generate a status that can be "game", normally, or one of end_game flags
     def legal_move
-        #puts "From legal move, we have: @piece_sym=",@piece_sym," coord=",@coordinates
+
         candidates=Game.position.select { |coord,piece| 
             piece.piecesym==@piece_sym &&
             piece.color==Game.who_move &&
@@ -124,7 +124,7 @@ class Move
                 true
             end
         }
-        puts candidates
+ 
         return Game.error = "Error: Move is not possible" if candidates.size==0 #No piece can do the move
         return Game.error = "Error: Move is ambiguous" if candidates.size>1 #not recognized what piece have to move  
         @piece=candidates.values[0]
