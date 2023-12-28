@@ -64,28 +64,31 @@ class ConsoleBoard
         end
         mv+="\n\n" if Game.move_stack != []
 
-        #end-game output
-        case Game.error
-        when "end_draw"
-            mv+=" DRAW! "
-        when "end_mate"
-            mv+=" CHECKMATE!"
-        when "Game Resigned"
-            Game.actual_move=="B" ? mv+=" BLACK RESIGN!" : mv+= " WHITE RESIGN!"
-        else
-            mv+=Game.error
-        end
+        mv+= Game.error if Game.error!="endgame"
+        mv+= "\n"+ Game.status if Game.status!="game"
         puts st+"\n"+mv
+
+        #end-game output
+        # case Game.error
+        # when "stalemate"
+        #     mv+=" DRAW! "
+        # when "repetition draw"
+        #     mv+=" This position happened 3 times in the game! DRAW!"
+        # when "end_mate"
+        #     mv+=" CHECKMATE! WOW!"
+        # when "endgame"
+        #     Game.who_move=="B" ? mv+=" BLACK RESIGN!" : mv+= " WHITE RESIGN!"
+        #     Game.status="end"
+        # else
+        #     mv+=Game.error
+        # end
+        # puts st+"\n"+mv
     end
 
     def getconsole
-        loop do
-            Game.who_move=="W" ? (puts "White, make your move: ") : (puts "Black, make your move: ")
-            actual_move=gets.chomp
-            move=Move.new(actual_move)
-            #break if Game.error==""
-            putconsole     
-        end
+        Game.who_move=="W" ? (puts "White, make your move: ") : (puts "Black, make your move: ")
+        actual_move=gets.chomp
+        move=Move.new(actual_move)
     end
 
     def setup_board(variant="classic")

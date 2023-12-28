@@ -54,8 +54,8 @@ class Move
         mv.pop if mv[-1].match?(/[\+\#]/)
         case mv 
             in ["r","e","s","i","g","n"] 
-                Game.status="Game End for resignation"
-                return Game.error="Game resigned"
+                Game.who_move=="B" ? Game.status=" BLACK RESIGN!" : Game.status= " WHITE RESIGN!"
+                return Game.error="endgame"
             in ["o","-","o"] | ["O","-","O"] 
                 piece_sym = "K"
                 @castling = "short"

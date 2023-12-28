@@ -6,12 +6,14 @@
 
 require_relative "console_board"
 require_relative "move"
+require_relative "game"
 
 
 class GameManager
     attr_reader :media, :variant, :this_match
    
     def initialize(variant="classic",media="console")
+        Game.reset!
         @variant = variant
         case media
         when "console"
@@ -20,10 +22,11 @@ class GameManager
     end
 
     def new_game
+        @this_match.show_game
         loop do
-            @this_match.show_game 
-            break if Game.error!=""
-            @this_match.take_move            
+            @this_match.take_move
+            @this_match.show_game     
+            break if Game.error=="endgame"       
         end
     end
 

@@ -13,8 +13,7 @@ describe "Move" do
         end
         it "a) resign word" do
             @move=Move.new("resign",false)
-            expect(Game.error).to eql("Game resigned")
-            expect(Game.status).to eql("Game End for resignation")
+            expect(Game.error).to eql("endgame")
         end
         it "b) o-o" do
             @move=Move.new("o-o",false)
