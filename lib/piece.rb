@@ -69,8 +69,7 @@ class Piece
         end
         Game.position=old_position if test
         true
-    end
-            
+    end 
 
 
     private

@@ -19,23 +19,14 @@ class Move
     
     attr_accessor :coordinates, :piece_sym, :capture, :promote, :castling, :spec
 
-    def initialize(move_to_parse,in_game=false)
+    def initialize(move_to_parse)
         Game.status="game"
         @capture=false
         @castling=""
         @spec=""
         @promote=nil
         parser(move_to_parse)
-        if in_game
-            return Game.status if Game.status !="game"
-            square=legal_move
-            return Game.status if Game.status !="game"
-            make_move(square)
-            return Game.status if Game.status !="game"
-            #Game.history.push({move_to_parse => Game.position})
-        else
-            return false if Game.status!="game"
-        end
+        legal_move if Game.status=="game"
     end
 
     # Here follows class method for obtain status of the game: 
@@ -135,77 +126,6 @@ class Move
         return candidates.keys[0]
     end
 
-    def make_move(square_from)
-        piece=Game.position[square_from]
-        color=Game.who_move
-        last_position=Game.position.clone
-        case @castling
-        when ""
-            piece.status="moved"
-            #2-square pawn special move test, for en-passant flag status
-            if piece.class==Pawn
-                piece.status=Game.actual_turn.to_s if color=="W" && square_from[1]=="2" && @coordinates[1]=="4"
-                piece.status=Game.actual_turn.to_s if color=="B" && square_from[1]=="7" && @coordinates[1]=="5"
-            end
-            Game.position.delete(square_from)
-            Game.position[@coordinates]=piece
-        when "short"
-            case color
-            when "B"
-                king=Game.position.delete(["e","8"])
-                rook=Game.position.delete(["h","8"])
-                king.status="moved"
-                rook.status="moved"
-                Game.position[["g","8"]]=king
-                Game.position[["f","8"]]=rook
-            when "W"
-                king=Game.position.delete(["e","1"])
-                rook=Game.position.delete(["h","1"])
-                king.status="moved"
-                rook.status="moved"
-                Game.position[["g","1"]]=king
-                Game.position[["f","1"]]=rook
-            end
-        when "long"
-            case color
-            when "B"
-                king=Game.position.delete(["e","8"])
-                rook=Game.position.delete(["a","8"])
-                king.status="moved"
-                rook.status="moved"
-                Game.position[["c","8"]]=king
-                Game.position[["d","8"]]=rook
-            when "W"
-                king=Game.position.delete(["e","1"])
-                rook=Game.position.delete(["a","1"])
-                king.status="moved"
-                rook.status="moved"
-                Game.position[["c","1"]]=king
-                Game.position[["d","1"]]=rook
-            end
-        end
-        king=Game.position.select {|pos,piece|
-            piece.class==King &&
-            piece.color==color        
-        }
-        
-        if Game.threatened_square(king.keys[0])
-            Game.position=last_position
-            return Game.status="King is on check!" #King is under check after the move, so the move is not correct
-        end
-        return true
-    end
-   
-
-
-    # threatened_square is a key method. A square is threatened if there is at least an enemy piece that
-    # can execute a capture move in that square if in this square there is a piece.
-    # this is useful for king movement: infact, if king is in a threatened square, there are possible only
-    # moves that avoid threat. If there are no moves, king is checkmated and game end with opponent victory
-    # The method is also useful, for king movements. Infact King cannot move or make a capture move in a threatened_square.
-    # King cannot also make a castling if king is threatened or is threatened one of the king-castling
-
-   
 end
 
 
