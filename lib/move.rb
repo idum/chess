@@ -21,6 +21,7 @@ class Move
 
     def initialize(move_to_parse,in_game=true)
         Game.error=""
+        Game.status="game"
         @capture=false
         @castling=""
         @spec=""
@@ -29,6 +30,11 @@ class Move
         legal_move if Game.error=="" && in_game
         try_move if Game.error=="" && in_game
         Game.save_move(move_to_parse) if Game.error=="" && in_game
+        if Game.repetition_draw
+            Game.status="This position happened 3 times. Draw for repetition"
+            Game.error="endgame"
+        end
+        Game.status="Check" if Game.check_condition
     end
 
     # Here follows class method for obtain status of the game: 

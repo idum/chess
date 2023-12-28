@@ -59,10 +59,6 @@ class Game
         @position = history[-1].values[0]
     end
 
-    def history=(history)
-        self.load_game(history)
-    end
-
     def self.repetition_draw
         a={}
         @history.each do |turn|

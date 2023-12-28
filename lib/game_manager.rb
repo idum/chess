@@ -24,9 +24,9 @@ class GameManager
     def new_game
         @this_match.show_game
         loop do
+            break if Game.error=="endgame"   
             @this_match.take_move
             @this_match.show_game     
-            break if Game.error=="endgame"       
         end
     end
 
