@@ -17,16 +17,17 @@ class Move
 
     CHESS_DICTIONARY = {"K" => King, "Q" => Queen, "R" => Rook, "B" => Bishop, "N" => Knight, "P" => Pawn, "0" => Piece}
     
-    attr_accessor :coordinates, :piece_sym, :capture, :promote, :castling, :spec
+    attr_accessor :square_from, :square_to, :piece_sym, :capture, :promote, :castling, :spec
 
-    def initialize(move_to_parse)
-        Game.status="game"
+    def initialize(move_to_parse,in_game=true)
+        Game.error=""
         @capture=false
         @castling=""
         @spec=""
         @promote=nil
         parser(move_to_parse)
-        legal_move if Game.status=="game"
+        legal_move if Game.error=="" && in_game
+        try_move if Game.error=="" && in_game
     end
 
     # Here follows class method for obtain status of the game: 
@@ -52,7 +53,8 @@ class Move
         mv.pop if mv[-1].match?(/[\+\#]/)
         case mv 
             in ["r","e","s","i","g","n"] 
-                return Game.status="Game Resigned"
+                Game.status="Game Resigned"
+                return Game.error="Game End for resignation"
             in ["o","-","o"] | ["O","-","O"] 
                 piece_sym = "K"
                 @castling = "short"
@@ -91,11 +93,11 @@ class Move
                 piece_sym="P"
                 @capture=true
         else 
-            return Game.status= "Error: Move not recognized"           
+            return Game.error= "Error: Move not recognized"           
         end       
-        return Game.status = "Error: wrong column" if col && !col.match?(/[a-h]/)
-        return Game.status = "Error: wrong row" if row && !row.match?(/[1-8]/)
-        @coordinates=[col,row]
+        return Game.error = "Error: wrong column" if col && !col.match?(/[a-h]/)
+        return Game.error = "Error: wrong row" if row && !row.match?(/[1-8]/)
+        @square_to=[col,row]
         @piece_sym=piece_sym
         @spec=spec
         @promote=promote 
@@ -109,7 +111,7 @@ class Move
         candidates=Game.position.select { |coord,piece| 
             piece.class==CHESS_DICTIONARY[@piece_sym] &&
             piece.color==Game.who_move &&
-            piece.legal_move(@coordinates,coord, promotion_piece: @promote, capture: @capture, castling: @castling) &&
+            piece.legal_move(@square_to,coord, promotion_piece: @promote, capture: @capture, castling: @castling) &&
             case @spec
             when /[a-h][1-8]/
                 coord==@spec.split("")
@@ -121,10 +123,14 @@ class Move
                 true
             end
         }
-        return Game.status = "Error: Move is not possible" if candidates.size==0 #No piece can do the move
-        return Game.status = "Error: Move is ambiguous" if candidates.size>1 #not recognized what piece have to move  
-        return candidates.keys[0]
+        return Game.error = "Error: Move is not possible" if candidates.size==0 #No piece can do the move
+        return Game.error = "Error: Move is ambiguous" if candidates.size>1 #not recognized what piece have to move  
+        @square_from=candidates.keys[0]
     end
+
+    def try_move
+    end
+
 
 end
 

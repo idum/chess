@@ -7,12 +7,13 @@ require_relative "move"
 class Game
 
     class << self
-        attr_accessor :history, :position, :status
+        attr_accessor :history, :position, :status, :error
     end
 
     @position={}
     @history=[]
-    @status="game"
+    @status=""
+    @error=""
 
     def self.actual_turn
         (@history.size/2) + 1

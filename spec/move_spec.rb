@@ -13,73 +13,85 @@ describe "Move" do
    
     context "test correct move input" do
         it "a) resign word" do
-            expect{move=Move.new("resign")}.not_to raise_error
+            @move=Move.new("resign",false)
+            expect(Game.error).to eql("Game End for resignation")
         end
         it "b) o-o" do
-            expect{@move=Move.new("o-o")}.not_to raise_error
+            @move=Move.new("o-o",false)
+            expect(Game.error).to eql("")
             expect(@move.castling).to eql("short")
             expect(@move.piece_sym).to eql "K"
         end
         it "b) o-o-o" do
-            expect{@move=Move.new("O-O-O")}.not_to raise_error
+            @move=Move.new("O-O-O",false)
+            expect(Game.error).to eql("")
             expect(@move.castling).to eql "long"
             expect(@move.piece_sym).to eql "K"
         end
         it "c) standard notation: [QKRBN][col][row]" do
-            expect{@move=Move.new("Qb4")}.not_to raise_error
+            @move=Move.new("Qb4",false)
+            expect(Game.error).to eql("")
             expect(@move.piece_sym).to eql "Q"
-            expect(@move.coordinates).to eql(["b","4"])
+            expect(@move.square_to).to eql(["b","4"])
         end
         it "d) standard notation for pawn: [col][row]" do
-            expect {@move=Move.new("a7")}.not_to raise_error
+            @move=Move.new("a7",false)
+            expect(Game.error).to eql("")
             expect(@move.piece_sym).to eql "P"
-            expect(@move.coordinates).to eql(["a","7"])
+            expect(@move.square_to).to eql(["a","7"])
         end
         it "e) standard capture move: [QKRBN]x[col][row]" do
-            expect {@move=Move.new("Nxf2")}.not_to raise_error
+            @move=Move.new("Nxf2",false)
+            expect(Game.error).to eql("")
             expect(@move.piece_sym).to eql "N"
-            expect(@move.coordinates).to eql(["f","2"])
+            expect(@move.square_to).to eql(["f","2"])
             expect(@move.capture).to be true
         end  
         it "f) standard notation for pawn capture move: [starting col]x[col][row]" do
-            expect {@move=Move.new("cxd4")}.not_to raise_error
+            @move=Move.new("cxd4",false)
+            expect(Game.error).to eql("")
             expect(@move.piece_sym).to eql "P"
             expect(@move.spec).to eql "c"
-            expect(@move.coordinates).to eql(["d","4"])
+            expect(@move.square_to).to eql(["d","4"])
             expect(@move.capture).to be true
         end
         it "f) very rare case notation for pawn capture move: [starting col][starting row]x[col][row]" do
-            expect {@move=Move.new("c3xd4")}.not_to raise_error
+            @move=Move.new("c3xd4",false)
+            expect(Game.error).to eql("")
             expect(@move.piece_sym).to eql "P"
             expect(@move.spec).to eql "c3"
-            expect(@move.coordinates).to eql(["d","4"])
+            expect(@move.square_to).to eql(["d","4"])
             expect(@move.capture).to be true
         end
 
         it "g) move notation when more pieces can do the move: [QKRBN][starting col/row][col][row]" do
-            expect {@move=Move.new("Rde7")}.not_to raise_error
+            @move=Move.new("Rde7",false)
+            expect(Game.error).to eql("")
             expect(@move.piece_sym).to eql "R"
             expect(@move.spec).to eql "d"
-            expect(@move.coordinates).to eql(["e","7"])
+            expect(@move.square_to).to eql(["e","7"])
         end
         it "h) move notation when more pieces can do the capturing move: [QKRBN][starting col/row]x[col][row]" do
-            expect {@move=Move.new("Rdxe7")}.not_to raise_error
+            @move=Move.new("Rdxe7",false)
+            expect(Game.error).to eql("")
             expect(@move.piece_sym).to eql "R"
             expect(@move.spec).to eql "d"
-            expect(@move.coordinates).to eql(["e","7"])
+            expect(@move.square_to).to eql(["e","7"])
             expect(@move.capture).to be true
         end
         it "i) pawn promotion move:[col][row]=[QKRBN]" do
-            expect {@move=Move.new("a8=Q")}.not_to raise_error
+            @move=Move.new("a8=Q",false)
+            expect(Game.error).to eql("")
             expect(@move.piece_sym).to eql "P"
             expect(@move.promote).to eql "Q"
-            expect(@move.coordinates).to eql(["a","8"])
+            expect(@move.square_to).to eql(["a","8"])
         end
         it "i) pawn promotion capture move:[starting col]x[col][row]=[QKRBN]" do
-            expect {@move=Move.new("bxa8=Q")}.not_to raise_error
+            @move=Move.new("bxa8=Q",false)
+            expect(Game.error).to eql("")
             expect(@move.piece_sym).to eql "P"
             expect(@move.promote).to eql "Q"
-            expect(@move.coordinates).to eql(["a","8"])
+            expect(@move.square_to).to eql(["a","8"])
             expect(@move.spec).to eql "b"
             expect(@move.capture).to be true
         end
@@ -87,27 +99,27 @@ describe "Move" do
     context "bad move input" do
         it "col outside board" do
             move=Move.new("k3")
-            expect(Game.status).to eql("Error: wrong column")
+            expect(Game.error).to eql("Error: wrong column")
         end
         it "row outside board" do
             move=Move.new("a9")
-            expect(Game.status).to eql("Error: wrong row")
+            expect(Game.error).to eql("Error: wrong row")
         end
         it "not recognized piece" do
             move=Move.new("Fk3")
-            expect(Game.status).to eql("Error: Move not recognized")
+            expect(Game.error).to eql("Error: Move not recognized")
         end
         it "format capture not correct" do
             move=Move.new("N+k3")
-            expect(Game.status).to eql("Error: Move not recognized")
+            expect(Game.error).to eql("Error: Move not recognized")
         end
         it "try to promote in row different to 8 for W " do
             Move.new("c7=Q")
-            expect(Game.status).to eql("Error: Move not recognized")
+            expect(Game.error).to eql("Error: Move not recognized")
         end
         it "try to promote in row different to 1 for B " do   
             Move.new("c2=Q")
-            expect(Game.status).to eql("Error: Move not recognized")
+            expect(Game.error).to eql("Error: Move not recognized")
         end
         
     end
