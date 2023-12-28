@@ -37,6 +37,11 @@ class Game
         @status="game"
     end
 
+    def self.save_move(move)
+        h={move => @position}
+        @history.push(h)
+    end
+
     def self.turn_back
         @history.pop
         @position=@history[-1].values[0]

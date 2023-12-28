@@ -9,21 +9,21 @@ require_relative "move"
 
 
 class GameManager
-    attr_reader :media, :variant, :game
+    attr_reader :media, :variant, :this_match
    
     def initialize(variant="classic",media="console")
         @variant = variant
         case media
         when "console"
-            @game=ConsoleBoard.new(variant,media)
+            @this_match=ConsoleBoard.new(variant,media)
         end
     end
 
     def new_game
         loop do
-            @game.show_game 
-            break if Game.status!="game"
-            @game.take_move            
+            @this_match.show_game 
+            break if Game.error!=""
+            @this_match.take_move            
         end
     end
 

@@ -14,7 +14,8 @@ describe "Move" do
     context "test correct move input" do
         it "a) resign word" do
             @move=Move.new("resign",false)
-            expect(Game.error).to eql("Game End for resignation")
+            expect(Game.error).to eql("Game resigned")
+            expect(Game.status).to eql("Game End for resignation")
         end
         it "b) o-o" do
             @move=Move.new("o-o",false)

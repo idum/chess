@@ -17,7 +17,7 @@ class Move
 
     CHESS_DICTIONARY = {"K" => King, "Q" => Queen, "R" => Rook, "B" => Bishop, "N" => Knight, "P" => Pawn, "0" => Piece}
     
-    attr_accessor :square_from, :square_to, :piece_sym, :capture, :promote, :castling, :spec
+    attr_accessor :square_from, :square_to, :piece_sym, :capture, :promote, :castling, :spec, :piece
 
     def initialize(move_to_parse,in_game=true)
         Game.error=""
@@ -28,6 +28,7 @@ class Move
         parser(move_to_parse)
         legal_move if Game.error=="" && in_game
         try_move if Game.error=="" && in_game
+        Game.save_move(move_to_parse)
     end
 
     # Here follows class method for obtain status of the game: 
@@ -53,8 +54,8 @@ class Move
         mv.pop if mv[-1].match?(/[\+\#]/)
         case mv 
             in ["r","e","s","i","g","n"] 
-                Game.status="Game Resigned"
-                return Game.error="Game End for resignation"
+                Game.status="Game End for resignation"
+                return Game.error="Game resigned"
             in ["o","-","o"] | ["O","-","O"] 
                 piece_sym = "K"
                 @castling = "short"
@@ -109,9 +110,9 @@ class Move
     def legal_move
         #puts "From legal move, we have: @piece_sym=",@piece_sym," coord=",@coordinates
         candidates=Game.position.select { |coord,piece| 
-            piece.class==CHESS_DICTIONARY[@piece_sym] &&
+            piece.piecesym==@piece_sym &&
             piece.color==Game.who_move &&
-            piece.legal_move(@square_to,coord, promotion_piece: @promote, capture: @capture, castling: @castling) &&
+            piece.legal_move(@square_to,coord,promotion_piece: @promote, capture: @capture, castling: @castling) &&
             case @spec
             when /[a-h][1-8]/
                 coord==@spec.split("")
@@ -123,15 +124,16 @@ class Move
                 true
             end
         }
+        puts candidates
         return Game.error = "Error: Move is not possible" if candidates.size==0 #No piece can do the move
         return Game.error = "Error: Move is ambiguous" if candidates.size>1 #not recognized what piece have to move  
+        @piece=candidates.values[0]
         @square_from=candidates.keys[0]
     end
 
     def try_move
+        return Game.error = "Error: King is on check" if !@piece.try_move(@square_to,@square_from, test=false, castling: @castling, promotion_piece: @promote)
     end
-
-
 end
 
 
