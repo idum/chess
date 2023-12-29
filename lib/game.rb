@@ -39,7 +39,7 @@ class Game
     end
 
     def self.save_move(move)
-        h={move => @position}
+        h={move => @position.clone}
         @history.push(h)
     end
 

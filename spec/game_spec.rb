@@ -100,24 +100,24 @@
             Move.new("Qa2")
             Move.new("Bg7")
             Move.new("Qa1")
-            #Move.new("Bf8")
-            #Move.new("Qa2")
-            #Move.new("Bg7")
-            #Move.new("Qa1")
+            Move.new("Bf8")
+            Move.new("Qa2")
+            Move.new("Bg7")
+            Move.new("Qa1")
         end
-        # it "we should be at turn 4 and move should be black; History should be size 7" do
-        #     expect(Game.who_move).to eql "B"
-        #     expect(Game.actual_turn).to eql 4
-        #     expect(Game.history.size).to eql 7
-        # end
+        it "we should be at turn 4 and move should be black; History should be size 7" do
+            expect(Game.who_move).to eql "B"
+            expect(Game.actual_turn).to eql 4
+            expect(Game.history.size).to eql 7
+        end
         it "we should't be in draw_repetition" do
-            #Game.history.each {|h| p h}
             expect(Game.repetition_draw).to be false
         end
-        # it "we should now be in draw repetition if we do again Bg7 " do
-        #     Move.new("Bf8")
-        #     expect(Game.repetition_draw).to be true
-        # end
+        it "we should now be in draw repetition if we do again Bf8 - Qa2 " do
+            Move.new("Bf8")
+            Move.new("Qa2")
+            expect(Game.repetition_draw).to be true
+        end
     end
 
 end
