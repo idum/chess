@@ -71,6 +71,11 @@ class Piece
         true
     end 
 
+    def can_move_there?(square_to, square_from)
+        return true if legal_move(square_to,square_from) && try_move(square_to, square_from, test=true)
+        return true if legal_move(square_to,square_from, capture: true) && try_move(square_to, square_from, test=true, capture: true)
+        false
+    end
 
     private
     #some methods for modify rows and colums

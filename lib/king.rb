@@ -107,6 +107,14 @@ class King < Piece
         rook.status="moved" if rook
         true
     end
+
+    def can_move_there?(square_to, square_from, castling="")
+        return true if castling!="" && legal_move(square_to,square_from, castling: castling) && try_move(square_to, square_from, test=true, castling: castling)
+        return true if legal_move(square_to,square_from) && try_move(square_to, square_from, test=true)
+        return true if legal_move(square_to,square_from, capture: true) && try_move(square_to, square_from, test=true, capture: true)
+       
+        false
+    end
 end
 
 

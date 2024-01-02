@@ -63,15 +63,17 @@ describe "Bishop" do
             expect(@bishop.legal_move(["b","5"],["e","8"],capture: true)).to be false
         end
     end
-    context "try_move" do
+    context "try_move (and can_move_there?)" do
         it "it should be possible because king is not present" do
             expect(@bishop.legal_move(["h","6"],["f","4"])).to be true
             expect(@bishop.try_move(["h","6"],["f","4"])).to be true
+            expect(@bishop.can_move_there?(["h","6"],["f","4"])).to be true
         end
         it "it should be possible because king is not threatened" do
             Game.position[["d","8"]]=King.new(color: "W")
             expect(@bishop.legal_move(["h","6"],["f","4"])).to be true
             expect(@bishop.try_move(["h","6"],["f","4"])).to be true
+            expect(@bishop.can_move_there?(["h","6"],["f","4"])).to be true
             Game.position.delete(["d","8"])
         end
         it "it should not be possible because king is threatened" do
@@ -79,12 +81,14 @@ describe "Bishop" do
             expect(@bishop.legal_move(["h","6"],["f","4"])).to be true
             expect(Game.check_condition(@bishop.color)).to be true
             expect(@bishop.try_move(["h","6"],["f","4"])).to be false
+            expect(@bishop.can_move_there?(["h","6"],["f","4"])).to be false
         end
         it "now in d7 there is a Bishop. He can capture enemy Bishop in e8 and remove the threat" do
             Game.position[["d","7"]]=@bishop
             expect(@bishop.legal_move(["e","8"],["d","7"], capture: true)).to be true
             expect(Game.check_condition(@bishop.color)).to be true
             expect(@bishop.try_move(["e","8"],["d","7"])).to be true
+            expect(@bishop.can_move_there?(["e","8"],["d","7"])).to be true
         end
         it "same move, with test flag = false, verify that the move if effectively done" do
             expect(@bishop.try_move(["e","8"],["d","7"],test=false)).to be true

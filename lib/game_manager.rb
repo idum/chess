@@ -26,6 +26,12 @@ class GameManager
         loop do
             break if Game.error=="endgame"   
             @this_match.take_move
+            if Game.repetition_draw
+                Game.status="This position happened 3 times. Draw for repetition"
+                Game.error="endgame"
+            end
+            Game.status="Check" if Game.check_condition
+            
             @this_match.show_game     
         end
     end

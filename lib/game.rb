@@ -87,6 +87,19 @@ class Game
         return false if king=={}
         self.threatened_square(king.keys[0])
     end
+
+    def self.no_legal_moves(color=self.who_move)
+        # ("a".."h").each do |col|
+        #     ("1".."8").each do |row|
+        #         return false if self.position.any? {|pos,piece|
+        #             piece.legal_move()                
+        #         }
+
+    end
+
+    def self.end_game(color=self.who_move)
+    end
+
 end
 
 

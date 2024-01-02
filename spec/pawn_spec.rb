@@ -172,10 +172,10 @@ describe Pawn do
     end 
 end
   
-context "try_move" do
+context "try_move and can_move_there?" do
     before do
-        @pawn=Pawn.new(color: "W", coordinates: ["e","2"], status: "0")
-        @bpawn=Pawn.new(color: "B", coordinates: ["e","7"])
+        @pawn=Pawn.new(color: "W",  status: "0")
+        @bpawn=Pawn.new(color: "B")
         Game.position={
             ["e","2"] => @pawn,
             ["e","7"] => @bpawn
@@ -183,6 +183,7 @@ context "try_move" do
     end
     
     it "it should be possible because king is not present,test if status is not adjourned(test mode)" do
+        expect(@pawn.can_move_there?(["e","4"],["e","2"])).to be true
         expect(@pawn.legal_move(["e","4"],["e","2"])).to be true
         expect(@pawn.try_move(["e","4"],["e","2"])).to be true
         expect(@pawn.status).to eql("0")
@@ -190,12 +191,14 @@ context "try_move" do
     end
     it "it should be possible because king is not threatened" do
         Game.position[["a","8"]]=King.new(color: "W")
+        expect(@pawn.can_move_there?(["e","4"],["e","2"])).to be true
         expect(@pawn.legal_move(["e","4"],["e","2"])).to be true
         expect(@pawn.try_move(["e","4"],["e","2"])).to be true
         Game.position.delete(["a","8"])
     end
     it "it should not be possible because king is threatened" do
         Game.position[["d","6"]]=King.new(color: "W")
+        expect(@pawn.can_move_there?(["e","4"],["e","2"])).to be false
         expect(@pawn.legal_move(["e","4"],["e","2"])).to be true
         expect(Game.check_condition(@pawn.color)).to be true
         expect(@pawn.try_move(["e","4"],["e","2"])).to be false
@@ -203,6 +206,7 @@ context "try_move" do
     it "now pawn is in f6 and can capture e7, removing the threat" do
         Game.position[["d","6"]]=King.new(color: "W")
         Game.position[["f","6"]]=@pawn
+        expect(@pawn.can_move_there?(["e","7"],["f","6"])).to be true
         expect(@pawn.legal_move(["e","7"],["f","6"], capture: true)).to be true
         expect(Game.check_condition(@pawn.color)).to be true
         expect(@pawn.try_move(["e","7"],["f","6"])).to be true
@@ -217,6 +221,7 @@ context "try_move" do
     it "test en_passant" do
         Game.position[["b","5"]]=Pawn.new(color: "B", status: "-1")
         Game.position[["c","5"]]=@pawn
+        expect(@pawn.legal_move(["b","6"],["c","5"], capture: true)).to be true
         expect(@pawn.try_move(["b","6"],["c","5"], test=false)).to be true
         expect(Game.position[["b","5"]]).to be nil
         expect(Game.position[["b","6"]]).to eql(@pawn)

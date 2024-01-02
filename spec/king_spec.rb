@@ -1,5 +1,5 @@
 
-require "./lib/piece"
+require "./lib/game"
 
 # Class King define King movement rules. King base movement is a square in any directions.
 # Special move is the Castling, short and long, that need some pre-conditions, as in the class.
@@ -126,7 +126,7 @@ describe "King" do
             expect(@king.legal_move([],["e","1"],castling: "short")).to be false
         end
     end
-    context "try_move" do
+    context "try_move and can_move_there?" do
         before do
             @king=King.new(color: "W")
             Game.position={
@@ -137,12 +137,15 @@ describe "King" do
         end
         # king moves are naturally checked for threats in movement in legal_move. Here is supposed that that control is made
         it "@king should complete move in d1" do
+            expect(@king.can_move_there?(["d","1"],["e","1"])).to be true
             expect(@king.try_move(["d","1"],["e","1"], test=false)).to be true
             expect(Game.position[["d","1"]]).to eql(@king)
             expect(Game.position[["e","1"]]).to be nil
             expect(@king.status).to eql "moved"
+            
         end
         it "@king should long castling" do
+            expect(@king.can_move_there?(["c","1"],["e","1"],castling="long")).to be true
             expect(@king.try_move("","",test=false, castling:"long")).to be true
             expect(Game.position[["c","1"]]).to eql(@king)
             expect(Game.position[["e","1"]]).to be nil
@@ -150,8 +153,10 @@ describe "King" do
             expect(Game.position[["d","1"]].class).to eql(Rook)
             expect(Game.position[["a","1"]]).to be nil
             expect(Game.position[["d","1"]].status).to eql "moved"
+            
         end
         it "@king should short castling" do
+            expect(@king.can_move_there?(["g","1"],["e","1"],castling="short")).to be true
             expect(@king.try_move("","",test=false, castling:"short")).to be true
             expect(Game.position[["g","1"]]).to eql(@king)
             expect(Game.position[["e","1"]]).to be nil
@@ -159,6 +164,7 @@ describe "King" do
             expect(Game.position[["f","1"]].class).to eql(Rook)
             expect(Game.position[["h","1"]]).to be nil
             expect(Game.position[["f","1"]].status).to eql "moved"
+            
         end
 
     end
